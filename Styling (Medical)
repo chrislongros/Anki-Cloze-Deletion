@@ -1,0 +1,185 @@
+/* ===== Keep your original desktop sizes EXACTLY ===== */
+.card {
+  background: #1e1e1e;
+  color: #eaeaea;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 28px;
+  text-align: center;
+  padding: 40px;
+}
+
+.question {
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.45;
+  margin-bottom: 20px;
+}
+
+.extra {
+  font-size: 24px;
+  color: #c88f8f;
+  opacity: 0.95;
+  text-align: center;
+  margin-top: 18px;
+  line-height: 1.55;
+}
+.extra img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 14px auto;
+  border-radius: 10px;
+}
+
+.cloze { color: #4caf50; font-weight: 700; }
+
+/* ===== EFDRC support: show editable cloze on desktop, safe cloze on phones ===== */
+.clozefield { display: none; }
+.editcloze  { display: block; }
+
+/* Buttons row */
+#hintRow{
+  margin-top: 26px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#hintRow .pill{ display: inline-flex; }
+
+#hintRow .pill > a.hint{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.18);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .2px;
+  text-decoration: none !important;
+  white-space: nowrap;
+  user-select: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,.18);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#hintRow .pill > a.hint:hover{ background: rgba(255,255,255,.085); }
+
+#hintRow .pill > a.hint.activeHint{
+  border-color: rgba(255,255,255,.38) !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.08) inset, 0 2px 10px rgba(0,0,0,.18);
+}
+
+#hintRow div.hint{ display: none; }
+
+/* Color tags */
+.pill.uworld  > a.hint { color:#5fd38d !important; }
+.pill.amboss  > a.hint { color:#66aaff !important; }
+.pill.kaplan  > a.hint { color:#c29bff !important; }
+.pill.missed  > a.hint { color:#ff6b6b !important; }
+.pill.pathoma > a.hint { color:#e0c3a8 !important; }
+.pill.bab     > a.hint { color:#8fc6ff !important; }
+.pill.fa      > a.hint { color:#ff9a9a !important; }
+.pill.nbme    > a.hint { color:#cfd8dc !important; }
+.pill.nejm    > a.hint { color:#b0bec5 !important; }
+.pill.utd     > a.hint { color:#66e0c2 !important; }
+.pill.add     > a.hint { color:#d0d0d0 !important; }
+
+/* Content area */
+#hintContentArea{ margin-top: 18px; }
+
+#hintContentArea .hintBlock{
+  max-width: 980px;
+  margin: 0 auto 18px;
+}
+
+#hintContentArea .hintMeta{
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  opacity: .75;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+#hintContentArea .hintBody{
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  text-align: left;
+  font-size: 18px;
+  line-height: 1.5;
+  box-shadow: 0 10px 28px rgba(0,0,0,.20);
+}
+
+#hintContentArea .hintBody img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 12px auto;
+  border-radius: 10px;
+}
+
+/* ===== PHONE-ONLY: AnKing-style "mobile mode" + safe cloze rendering ===== */
+@media (max-width: 600px){
+  .card{
+    padding: 18px;
+    font-size: 20px;
+    text-align: left;
+  }
+
+  .question{
+    font-size: 24px;
+    line-height: 1.4;
+    margin-bottom: 14px;
+    text-align: left;
+  }
+
+  .extra{
+    font-size: 18px;
+    margin-top: 12px;
+    text-align: left;
+  }
+
+  #hintRow{
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  #hintRow .pill > a.hint{
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  #hintContentArea .hintMeta{
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  #hintContentArea .hintBody{
+    font-size: 16px;
+    padding: 14px 14px;
+    line-height: 1.45;
+  }
+
+  /* On phones: show normal cloze, hide edit-cloze to avoid mobile issues */
+  .clozefield { display: block; }
+  .editcloze  { display: none; }
+}
+
+@media (max-width: 380px){
+  #hintRow .pill > a.hint{
+    padding: 12px 14px;
+    font-size: 12.5px;
+  }
+}
