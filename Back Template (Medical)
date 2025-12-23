@@ -1,0 +1,117 @@
+<div class="card-wrapper">
+
+  <div class="question">
+    <div class="clozefield">{{cloze:Text}}</div>
+    <div class="editcloze" id="text">{{edit:cloze:Text}}</div>
+  </div>
+
+  {{#Extra}}
+  <hr>
+  <div class="extra">{{edit:Extra}}</div>
+  {{/Extra}}
+
+  <div class="hintRow" id="hintRow">
+    {{#UWorld_2CK}}<span class="pill uworld">{{hint:UWorld_2CK}}</span>{{/UWorld_2CK}}
+    {{#UWorld_3}}<span class="pill uworld">{{hint:UWorld_3}}</span>{{/UWorld_3}}
+    {{#AMBOSS}}<span class="pill amboss">{{hint:AMBOSS}}</span>{{/AMBOSS}}
+    {{#Kaplan}}<span class="pill kaplan">{{hint:Kaplan}}</span>{{/Kaplan}}
+    {{#Missed_Questions}}<span class="pill missed">{{hint:Missed_Questions}}</span>{{/Missed_Questions}}
+    {{#Pathoma}}<span class="pill pathoma">{{hint:Pathoma}}</span>{{/Pathoma}}
+    {{#Boards_and_Beyond}}<span class="pill bab">{{hint:Boards_and_Beyond}}</span>{{/Boards_and_Beyond}}
+    {{#First_Aid}}<span class="pill fa">{{hint:First_Aid}}</span>{{/First_Aid}}
+    {{#NBME}}<span class="pill nbme">{{hint:NBME}}</span>{{/NBME}}
+    {{#NEJM}}<span class="pill nejm">{{hint:NEJM}}</span>{{/NEJM}}
+    {{#UpToDate}}<span class="pill utd">{{hint:UpToDate}}</span>{{/UpToDate}}
+    {{#Additional_Resources}}<span class="pill add">{{hint:Additional_Resources}}</span>{{/Additional_Resources}}
+  </div>
+
+  <div id="hintContentArea"></div>
+
+</div>
+
+<script>
+(function () {
+  const row  = document.getElementById("hintRow");
+  const area = document.getElementById("hintContentArea");
+  if (!row || !area) return;
+
+  function isVisible(el) {
+    const s = getComputedStyle(el);
+    return s.display !== "none" && s.visibility !== "hidden" && el.offsetHeight > 0;
+  }
+
+  function scrollToBlock(el) {
+    try { el.scrollIntoView({ block: "start", behavior: "smooth" }); }
+    catch (e) {
+      const y = el.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo(0, Math.max(0, y));
+    }
+  }
+
+  function clearActive() {
+    row.querySelectorAll("a.hint").forEach(a => a.classList.remove("activeHint"));
+  }
+
+  function slug(s){
+    return (s || "")
+      .toLowerCase()
+      .replace(/&amp;/g,"and")
+      .replace(/[^a-z0-9]+/g,"-")
+      .replace(/^-+|-+$/g,"")
+      .slice(0, 60) || "hint";
+  }
+
+  function addBlock(label, html, activeLink) {
+    const id = "hb-" + slug(label);
+
+    const existing = document.getElementById(id);
+    if (existing) {
+      clearActive();
+      if (activeLink) activeLink.classList.add("activeHint");
+      setTimeout(() => scrollToBlock(existing), 0);
+      return;
+    }
+
+    const wrap = document.createElement("div");
+    wrap.className = "hintBlock";
+    wrap.id = id;
+    wrap.innerHTML =
+      '<div class="hintMeta">' + label + '</div>' +
+      '<div class="hintBody">' + html + '</div>';
+
+    area.appendChild(wrap);
+
+    clearActive();
+    if (activeLink) activeLink.classList.add("activeHint");
+
+    setTimeout(() => scrollToBlock(wrap), 0);
+  }
+
+  function captureLatestHint() {
+    const hintDivs = Array.from(row.querySelectorAll("div.hint")).filter(isVisible);
+    if (!hintDivs.length) return;
+
+    const latestDiv = hintDivs[hintDivs.length - 1];
+
+    let activeLink = null;
+    const pill = latestDiv.closest(".pill");
+    if (pill) activeLink = pill.querySelector("a.hint");
+
+    const label = (activeLink ? activeLink.textContent : "Hint").trim();
+    addBlock(label, latestDiv.innerHTML, activeLink);
+
+    row.querySelectorAll("div.hint").forEach(d => { d.style.display = "none"; });
+  }
+
+  document.addEventListener("click", function (e) {
+    if (e.target.closest("#hintRow a.hint")) {
+      setTimeout(captureLatestHint, 0);
+    }
+  });
+
+  const obs = new MutationObserver(() => {
+    setTimeout(captureLatestHint, 0);
+  });
+  obs.observe(row, { subtree: true, childList: true, attributes: true, attributeFilter: ["style", "class"] });
+})();
+</script>
