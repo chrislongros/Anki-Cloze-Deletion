@@ -1,47 +1,34 @@
-<!-- =========================================================
-     BACK TEMPLATE
-     ---------------------------------------------------------
-     Features:
-     - Shows the cloze again (answer side).
-     - Optional "Extra" field below the cloze.
-     - Hint pills for multiple resources (UWorld/AMBOSS/FA/etc.).
-     - Clicking a pill toggles its hint block:
-         - first click opens the block
-         - second click closes the block
-     - When opened, the SAME pill is moved above its own content
-       block (so you can always collapse it in-place).
-     - Supports Anki's native "H" (show hint) behavior:
-         - user presses H
-         - Anki reveals the hint internally
-         - our script captures that revealed HTML and renders it
-           into a hint block (then hides the native hint payload)
-     ========================================================= -->
+<!--
+BACK TEMPLATE
+- Shows the cloze again (answer side).
+- Optional Extra field.
+- Resource hint pills (UWorld/AMBOSS/FA/etc).
+- Clicking a pill toggles its hint block.
+- When opened, the SAME pill moves above its own content block.
+- "H" key still works: Anki reveals the hint internally; JS captures it and renders it.
+- NOTE: Do NOT write Anki template syntax like double-curly braces inside comments,
+  because Anki will parse it and error if the field doesn't exist.
+-->
 
 <div class="card-wrapper">
 
   <div class="question">
-    <!-- Normal cloze rendering (answer side) -->
     <div class="clozefield">{{cloze:Text}}</div>
-
-    <!-- EFDR editable cloze rendering -->
     <div class="editcloze">{{edit:cloze:Text}}</div>
   </div>
 
-  <!-- Optional additional explanation / notes -->
   {{#Extra}}
   <div class="extra">{{Extra}}</div>
   {{/Extra}}
 
-  <!-- =======================================================
-       HINT PILL ROW (PRE-EXPANSION)
-       -------------------------------------------------------
-       Each field is wrapped in Anki's {{hint:Field}} helper.
-       This generates:
-         - an <a class="hint">…</a> link (the clickable pill)
-         - a hidden <div class="hint">…</div> payload (the content)
-       We hide the payload via CSS and render it ourselves.
-       ======================================================= -->
-
+  <!--
+  Hint row:
+  Each resource uses the Anki hint helper (e.g., ⟨hint:UWorld_2CK⟩).
+  That helper generates:
+  - a clickable link (class "hint")
+  - a hidden payload div (class "hint") containing the field HTML
+  We hide the payload with CSS and render the HTML into blocks ourselves.
+  -->
   <div id="hintRow">
     {{#UWorld_2CK}}<span class="pill uworld">{{hint:UWorld_2CK}}</span>{{/UWorld_2CK}}
     {{#AMBOSS}}<span class="pill amboss">{{hint:AMBOSS}}</span>{{/AMBOSS}}
@@ -53,7 +40,7 @@
     {{#Additional_Resources}}<span class="pill add">{{hint:Additional_Resources}}</span>{{/Additional_Resources}}
   </div>
 
-  <!-- Where expanded hint blocks will be injected -->
+  <!-- Expanded hint blocks are injected here -->
   <div id="hintContentArea"></div>
 
 </div>
@@ -64,27 +51,17 @@
   const area = document.getElementById("hintContentArea");
   if (!row || !area) return;
 
-  /* ---------------------------------------------------------
-     We MOVE the original pill <span class="pill ..."> into the
-     expanded block header, then put it back when collapsed.
-     To restore the pill to its exact original position in the
-     row, we insert a hidden placeholder node at that spot.
-     --------------------------------------------------------- */
+  const placeholders = new Map();
+  const movedPills   = new Map();
 
-  const placeholders = new Map(); // key -> placeholder span
-  const movedPills   = new Map(); // key -> pill span (moved element)
-
-  /* Escape helper for dataset key lookups in querySelector */
   function esc(s){ return (s||"").replace(/\\/g,"\\\\").replace(/"/g,'\\"'); }
 
-  /* Used to make a stable key per pill */
   function pillClassOf(a){
     const pill = a.closest(".pill");
     if (!pill) return "";
     return [...pill.classList].filter(c => c !== "pill").join(" ");
   }
 
-  /* Stable key per pill: label + class */
   function keyOf(a){
     if (a.dataset.hkey) return a.dataset.hkey;
     const k = (a.textContent || "").trim() + "||" + pillClassOf(a);
@@ -92,21 +69,15 @@
     return k;
   }
 
-  /* Find existing rendered hint block for a key */
   function getBlock(key){
     return area.querySelector('.hintBlock[data-key="' + esc(key) + '"]');
   }
 
-  /* Toggle expanded state visuals (+ / −) */
   function setExpanded(a, on){
     a.classList.toggle("activeHint", on);
     a.setAttribute("aria-expanded", on ? "true" : "false");
   }
 
-  /* In Anki, {{hint:Field}} creates:
-       <a class="hint">Label</a>
-       <div class="hint">Hidden payload</div>
-     This grabs the payload div that belongs to the clicked link. */
   function siblingHint(a){
     const d = a.nextElementSibling;
     return d && d.classList && d.classList.contains("hint") ? d : null;
@@ -116,7 +87,6 @@
     return a.closest(".pill");
   }
 
-  /* Move pill into expanded block header and create placeholder in row */
   function movePillIntoBlock(key, pillSpan, header){
     if (!pillSpan || !header) return;
 
@@ -133,7 +103,6 @@
     header.appendChild(pillSpan);
   }
 
-  /* Move pill back into the row where it originally was */
   function movePillBackToRow(key){
     const pillSpan = movedPills.get(key);
     const ph = placeholders.get(key);
@@ -146,7 +115,6 @@
     placeholders.delete(key);
   }
 
-  /* Create and inject an expanded hint block from raw HTML */
   function addBlockFromHtml(html, key, link){
     const block = document.createElement("div");
     block.className = "hintBlock";
@@ -165,7 +133,6 @@
     block.scrollIntoView({ block:"nearest", behavior:"smooth" });
   }
 
-  /* Close block, remove it, move pill back to row */
   function closeBlock(key, link){
     const b = getBlock(key);
     if (b) b.remove();
@@ -173,11 +140,6 @@
     if (link) setExpanded(link, false);
   }
 
-  /* ---------------------------------------------------------
-     CLICK HANDLER (TOGGLE)
-     - If already open: close + move pill back to row
-     - If closed: open block + move pill above content
-     --------------------------------------------------------- */
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a.hint");
     if (!a) return;
@@ -203,12 +165,6 @@
     }
   }, true);
 
-  /* ---------------------------------------------------------
-     "H" KEY SUPPORT (Anki-native hints)
-     - Anki reveals the hint payload internally when you press H
-     - We detect newly visible hint divs in the row
-     - We render them into our own blocks and then hide the payload
-     --------------------------------------------------------- */
   function captureVisible(){
     const divs = [...row.querySelectorAll("div.hint")].filter(d => d.offsetHeight > 0);
     divs.forEach(d => {
