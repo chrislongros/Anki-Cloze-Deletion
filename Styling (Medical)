@@ -1,9 +1,29 @@
-html, body{ height:auto !important; }
+/* =========================================================
+   GLOBAL RESET
+   ========================================================= */
+
+/* Prevent Anki / AnkiDroid from forcing full-height layouts */
+html, body{
+  height:auto !important;
+}
+
+/* Disable mobile text autoscaling (important for AnkiDroid) */
+body{
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+/* Kill any inherited flex centering from other note types */
 body, .card{
   display:block !important;
   align-items:initial !important;
   justify-content:initial !important;
 }
+
+
+/* =========================================================
+   CARD BASE STYLES
+   ========================================================= */
 
 .card{
   background:#1e1e1e;
@@ -13,7 +33,17 @@ body, .card{
   text-align:center;
   padding:40px;
 }
-.card-wrapper{ max-width:1100px; margin:0 auto; }
+
+/* Keep content centered horizontally with readable width */
+.card-wrapper{
+  max-width:1100px;
+  margin:0 auto;
+}
+
+
+/* =========================================================
+   QUESTION + EXTRA TEXT
+   ========================================================= */
 
 .question{
   font-size:34px;
@@ -21,23 +51,46 @@ body, .card{
   line-height:1.45;
   margin-bottom:20px;
 }
+
 .extra{
   font-size:24px;
   color:#c88f8f;
   opacity:.95;
   margin-top:18px;
 }
-.cloze{ color:#4caf50; font-weight:700; }
 
+/* Cloze highlight */
+.cloze{
+  color:#4caf50;
+  font-weight:700;
+}
+
+
+/* =========================================================
+   EFDR (Edit Cloze During Review) SUPPORT
+   ========================================================= */
+
+/* Hide cloze field during review, show edit field */
 .clozefield{ display:none; }
 .editcloze{ display:block; }
 
+
+/* =========================================================
+   IMAGES (GLOBAL)
+   ========================================================= */
+
+/* Prevent stretched images and reduce default margins */
 .card img{
   max-width:100% !important;
   display:block;
-  margin:8px auto;
+  margin:6px auto !important;
   border-radius:10px;
 }
+
+
+/* =========================================================
+   HINT BUTTON ROW (PRE-EXPANSION)
+   ========================================================= */
 
 #hintRow{
   margin-top:26px;
@@ -47,6 +100,12 @@ body, .card{
   flex-wrap:wrap;
 }
 
+
+/* =========================================================
+   PILL WRAPPER
+   ========================================================= */
+
+/* The outer span that contains the button + hidden payload */
 .pill{
   display:inline-flex !important;
   flex:none !important;
@@ -55,9 +114,17 @@ body, .card{
   height:auto !important;
 }
 
+/* IMPORTANT:
+   Always hide the native hint payload div,
+   even after the pill is moved into expanded content */
 .pill > div.hint{
   display:none !important;
 }
+
+
+/* =========================================================
+   HINT BUTTON (SAME STYLE EVERYWHERE)
+   ========================================================= */
 
 a.hint{
   display:inline-flex !important;
@@ -84,23 +151,32 @@ a.hint{
   position:relative !important;
 }
 
+/* + indicator when collapsed */
 a.hint::after{
   content:" +" !important;
   margin-left:10px !important;
   font-weight:900 !important;
   opacity:.85 !important;
 }
+
+/* − indicator when expanded */
 a.hint.activeHint::after{
   content:" −" !important;
   opacity:1 !important;
 }
 
+/* Expanded visual emphasis */
 a.hint.activeHint{
   border-color:rgba(255,255,255,.65) !important;
   box-shadow:
     0 0 0 2px rgba(255,255,255,.15) inset,
     0 4px 18px rgba(0,0,0,.35) !important;
 }
+
+
+/* =========================================================
+   RESOURCE COLOR CODING
+   ========================================================= */
 
 .pill.uworld  a.hint{ color:#5fd38d !important; }
 .pill.amboss  a.hint{ color:#66aaff !important; }
@@ -111,6 +187,7 @@ a.hint.activeHint{
 .pill.nbme    a.hint{ color:#cfd8dc !important; }
 .pill.add     a.hint{ color:#d0d0d0 !important; }
 
+/* Strong background color when expanded */
 .pill.uworld  a.hint.activeHint{ background:rgba(95,211,141,.35) !important; }
 .pill.amboss  a.hint.activeHint{ background:rgba(102,170,255,.35) !important; }
 .pill.fa      a.hint.activeHint{ background:rgba(255,154,154,.35) !important; }
@@ -120,45 +197,109 @@ a.hint.activeHint{
 .pill.nbme    a.hint.activeHint{ background:rgba(207,216,220,.35) !important; }
 .pill.add     a.hint.activeHint{ background:rgba(255,255,255,.28) !important; }
 
-#hintContentArea{ margin-top:18px; }
+
+/* =========================================================
+   EXPANDED HINT CONTENT AREA
+   ========================================================= */
+
+#hintContentArea{
+  margin-top:14px;
+}
 
 .hintBlock{
   max-width:980px;
-  margin:0 auto 18px;
+  margin:0 auto 14px;
 }
 
+/* Header that holds the moved pill button */
 .hintHeader{
   display:flex;
   justify-content:flex-start;
   align-items:flex-start;
-  margin:0 0 10px 0;
+  margin:0 0 8px 0;
 }
 
+/* Main hint content */
 .hintBody{
-  padding:16px 18px;
+  padding:14px 16px;
   border-radius:12px;
   background:rgba(255,255,255,.04);
   text-align:left;
   font-size:18px;
-  line-height:1.5;
+  line-height:1.45;
   box-shadow:0 10px 28px rgba(0,0,0,.20);
 }
 
-@media (max-width:600px){
-  .card{ padding:18px; font-size:20px; text-align:left; }
+
+/* =========================================================
+   IMAGE SPACING INSIDE HINT CONTENT
+   ========================================================= */
+
+/* Reduce large vertical gaps between images */
+.hintBody img{
+  margin:6px auto !important;
+}
+
+/* Even tighter spacing for consecutive images */
+.hintBody img + img{
+  margin-top:4px !important;
+}
+
+/* Reduce spacing between all child elements
+   (AMBOSS / FA HTML tends to add huge margins) */
+.hintBody > *{
+  margin-top:6px !important;
+  margin-bottom:6px !important;
+}
+
+
+/* =========================================================
+   MOBILE + ANKIDROID ADJUSTMENTS
+   ========================================================= */
+
+@media (max-width:1100px){
+  .card{
+    padding:18px;
+    font-size:20px;
+    text-align:left;
+  }
+
   .question{ font-size:24px; }
   .extra{ font-size:18px; }
 
-  #hintRow{ justify-content:flex-start; }
-
-  a.hint{
-    padding:12px 16px !important;
-    font-size:13px !important;
-    min-height:44px !important;
+  #hintRow{
+    justify-content:center;
+    gap:10px;
   }
 
-  .hintBody{ font-size:16px; padding:14px; }
+  a.hint{
+    padding:8px 14px !important;
+    font-size:12.5px !important;
+    border-radius:12px !important;
+  }
+
+  a.hint::after{
+    margin-left:8px !important;
+  }
+
+  .hintBody{
+    font-size:16px;
+    padding:12px 14px;
+    line-height:1.4;
+  }
+
+  .hintBody img{
+    margin:4px auto !important;
+  }
 
   .clozefield{ display:block; }
   .editcloze{ display:none; }
+}
+
+/* Extra safety for AnkiDroid WebView */
+body.mobile .hintBody img,
+body.android .hintBody img,
+.mobile .hintBody img,
+.android .hintBody img{
+  margin:4px auto !important;
 }
