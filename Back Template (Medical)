@@ -1,177 +1,230 @@
-html, body{ height:auto !important; }
-body, .card{
-  display:block !important;
-  align-items:initial !important;
-  justify-content:initial !important;
-}
+<!-- =========================================================
+     BACK TEMPLATE
+     ---------------------------------------------------------
+     Features:
+     - Shows the cloze again (answer side).
+     - Optional "Extra" field below the cloze.
+     - Hint pills for multiple resources (UWorld/AMBOSS/FA/etc.).
+     - Clicking a pill toggles its hint block:
+         - first click opens the block
+         - second click closes the block
+     - When opened, the SAME pill is moved above its own content
+       block (so you can always collapse it in-place).
+     - Supports Anki's native "H" (show hint) behavior:
+         - user presses H
+         - Anki reveals the hint internally
+         - our script captures that revealed HTML and renders it
+           into a hint block (then hides the native hint payload)
+     ========================================================= -->
 
-.card{
-  background:#1e1e1e;
-  color:#eaeaea;
-  font-family:Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size:28px;
-  text-align:center;
-  padding:40px;
-}
-.card-wrapper{ max-width:1100px; margin:0 auto; }
+<div class="card-wrapper">
 
-.question{
-  font-size:34px;
-  font-weight:500;
-  line-height:1.45;
-  margin-bottom:20px;
-}
-.extra{
-  font-size:24px;
-  color:#c88f8f;
-  opacity:.95;
-  margin-top:18px;
-}
-.cloze{ color:#4caf50; font-weight:700; }
+  <div class="question">
+    <!-- Normal cloze rendering (answer side) -->
+    <div class="clozefield">{{cloze:Text}}</div>
 
-/* EFDR */
-.clozefield{ display:none; }
-.editcloze{ display:block; }
+    <!-- EFDR editable cloze rendering -->
+    <div class="editcloze">{{edit:cloze:Text}}</div>
+  </div>
 
-.card img{
-  max-width:100% !important;
-  display:block;
-  margin:8px auto;
-  border-radius:10px;
-}
+  <!-- Optional additional explanation / notes -->
+  {{#Extra}}
+  <div class="extra">{{Extra}}</div>
+  {{/Extra}}
 
-/* Top row */
-#hintRow{
-  margin-top:26px;
-  display:flex;
-  gap:12px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
+  <!-- =======================================================
+       HINT PILL ROW (PRE-EXPANSION)
+       -------------------------------------------------------
+       Each field is wrapped in Anki's {{hint:Field}} helper.
+       This generates:
+         - an <a class="hint">…</a> link (the clickable pill)
+         - a hidden <div class="hint">…</div> payload (the content)
+       We hide the payload via CSS and render it ourselves.
+       ======================================================= -->
 
-/* Pill wrapper */
-.pill{
-  display:inline-flex !important;
-  flex:none !important;
-  align-self:flex-start !important;
-  width:fit-content !important;
-  height:auto !important;
-}
+  <div id="hintRow">
+    {{#UWorld_2CK}}<span class="pill uworld">{{hint:UWorld_2CK}}</span>{{/UWorld_2CK}}
+    {{#AMBOSS}}<span class="pill amboss">{{hint:AMBOSS}}</span>{{/AMBOSS}}
+    {{#First_Aid}}<span class="pill fa">{{hint:First_Aid}}</span>{{/First_Aid}}
+    {{#Kaplan}}<span class="pill kaplan">{{hint:Kaplan}}</span>{{/Kaplan}}
+    {{#Pathoma}}<span class="pill pathoma">{{hint:Pathoma}}</span>{{/Pathoma}}
+    {{#UpToDate}}<span class="pill utd">{{hint:UpToDate}}</span>{{/UpToDate}}
+    {{#NBME}}<span class="pill nbme">{{hint:NBME}}</span>{{/NBME}}
+    {{#Additional_Resources}}<span class="pill add">{{hint:Additional_Resources}}</span>{{/Additional_Resources}}
+  </div>
 
-/* ✅ CRITICAL FIX:
-   Hide the huge native payload div.hint everywhere (not only in #hintRow),
-   so moving the pill does NOT bring the hidden content along visually. */
-.pill > div.hint{
-  display:none !important;
-}
+  <!-- Where expanded hint blocks will be injected -->
+  <div id="hintContentArea"></div>
 
-/* Same pill link everywhere */
-a.hint{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  flex:none !important;
+</div>
 
-  padding:10px 22px !important;
-  border-radius:14px !important;
-  line-height:1.1 !important;
+<script>
+(function () {
+  const row  = document.getElementById("hintRow");
+  const area = document.getElementById("hintContentArea");
+  if (!row || !area) return;
 
-  background:rgba(255,255,255,.06) !important;
-  border:1px solid rgba(255,255,255,.18) !important;
+  /* ---------------------------------------------------------
+     We MOVE the original pill <span class="pill ..."> into the
+     expanded block header, then put it back when collapsed.
+     To restore the pill to its exact original position in the
+     row, we insert a hidden placeholder node at that spot.
+     --------------------------------------------------------- */
 
-  font-size:14px !important;
-  font-weight:650 !important;
-  letter-spacing:.2px !important;
+  const placeholders = new Map(); // key -> placeholder span
+  const movedPills   = new Map(); // key -> pill span (moved element)
 
-  text-decoration:none !important;
-  white-space:nowrap !important;
-  user-select:none !important;
+  /* Escape helper for dataset key lookups in querySelector */
+  function esc(s){ return (s||"").replace(/\\/g,"\\\\").replace(/"/g,'\\"'); }
 
-  box-shadow:0 2px 10px rgba(0,0,0,.18) !important;
-  position:relative !important;
-}
-
-/* + / − */
-a.hint::after{
-  content:" +" !important;
-  margin-left:10px !important;
-  font-weight:900 !important;
-  opacity:.85 !important;
-}
-a.hint.activeHint::after{
-  content:" −" !important;
-  opacity:1 !important;
-}
-
-/* Expanded: strong and obvious */
-a.hint.activeHint{
-  border-color:rgba(255,255,255,.65) !important;
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,.15) inset,
-    0 4px 18px rgba(0,0,0,.35) !important;
-}
-
-/* Resource text colors */
-.pill.uworld  a.hint{ color:#5fd38d !important; }
-.pill.amboss  a.hint{ color:#66aaff !important; }
-.pill.fa      a.hint{ color:#ff9a9a !important; }
-.pill.kaplan  a.hint{ color:#c29bff !important; }
-.pill.pathoma a.hint{ color:#e0c3a8 !important; }
-.pill.utd     a.hint{ color:#66e0c2 !important; }
-.pill.nbme    a.hint{ color:#cfd8dc !important; }
-.pill.add     a.hint{ color:#d0d0d0 !important; }
-
-/* Expanded backgrounds */
-.pill.uworld  a.hint.activeHint{ background:rgba(95,211,141,.35) !important; }
-.pill.amboss  a.hint.activeHint{ background:rgba(102,170,255,.35) !important; }
-.pill.fa      a.hint.activeHint{ background:rgba(255,154,154,.35) !important; }
-.pill.kaplan  a.hint.activeHint{ background:rgba(194,155,255,.35) !important; }
-.pill.pathoma a.hint.activeHint{ background:rgba(224,195,168,.35) !important; }
-.pill.utd     a.hint.activeHint{ background:rgba(102,224,194,.35) !important; }
-.pill.nbme    a.hint.activeHint{ background:rgba(207,216,220,.35) !important; }
-.pill.add     a.hint.activeHint{ background:rgba(255,255,255,.28) !important; }
-
-/* Expanded blocks */
-#hintContentArea{ margin-top:18px; }
-
-.hintBlock{
-  max-width:980px;
-  margin:0 auto 18px;
-}
-
-.hintHeader{
-  display:flex;
-  justify-content:flex-start;
-  align-items:flex-start;
-  margin:0 0 10px 0;
-}
-
-.hintBody{
-  padding:16px 18px;
-  border-radius:12px;
-  background:rgba(255,255,255,.04);
-  text-align:left;
-  font-size:18px;
-  line-height:1.5;
-  box-shadow:0 10px 28px rgba(0,0,0,.20);
-}
-
-/* Mobile */
-@media (max-width:600px){
-  .card{ padding:18px; font-size:20px; text-align:left; }
-  .question{ font-size:24px; }
-  .extra{ font-size:18px; }
-
-  #hintRow{ justify-content:flex-start; }
-
-  a.hint{
-    padding:12px 16px !important;
-    font-size:13px !important;
-    min-height:44px !important;
+  /* Used to make a stable key per pill */
+  function pillClassOf(a){
+    const pill = a.closest(".pill");
+    if (!pill) return "";
+    return [...pill.classList].filter(c => c !== "pill").join(" ");
   }
 
-  .hintBody{ font-size:16px; padding:14px; }
+  /* Stable key per pill: label + class */
+  function keyOf(a){
+    if (a.dataset.hkey) return a.dataset.hkey;
+    const k = (a.textContent || "").trim() + "||" + pillClassOf(a);
+    a.dataset.hkey = k;
+    return k;
+  }
 
-  .clozefield{ display:block; }
-  .editcloze{ display:none; }
-}
+  /* Find existing rendered hint block for a key */
+  function getBlock(key){
+    return area.querySelector('.hintBlock[data-key="' + esc(key) + '"]');
+  }
+
+  /* Toggle expanded state visuals (+ / −) */
+  function setExpanded(a, on){
+    a.classList.toggle("activeHint", on);
+    a.setAttribute("aria-expanded", on ? "true" : "false");
+  }
+
+  /* In Anki, {{hint:Field}} creates:
+       <a class="hint">Label</a>
+       <div class="hint">Hidden payload</div>
+     This grabs the payload div that belongs to the clicked link. */
+  function siblingHint(a){
+    const d = a.nextElementSibling;
+    return d && d.classList && d.classList.contains("hint") ? d : null;
+  }
+
+  function findPillSpanForLink(a){
+    return a.closest(".pill");
+  }
+
+  /* Move pill into expanded block header and create placeholder in row */
+  function movePillIntoBlock(key, pillSpan, header){
+    if (!pillSpan || !header) return;
+
+    if (!placeholders.has(key)) {
+      const ph = document.createElement("span");
+      ph.className = "pillPlaceholder";
+      ph.dataset.key = key;
+      ph.style.display = "none";
+      pillSpan.parentNode.insertBefore(ph, pillSpan);
+      placeholders.set(key, ph);
+    }
+
+    movedPills.set(key, pillSpan);
+    header.appendChild(pillSpan);
+  }
+
+  /* Move pill back into the row where it originally was */
+  function movePillBackToRow(key){
+    const pillSpan = movedPills.get(key);
+    const ph = placeholders.get(key);
+    if (!pillSpan || !ph) return;
+
+    ph.parentNode.insertBefore(pillSpan, ph);
+    ph.remove();
+
+    movedPills.delete(key);
+    placeholders.delete(key);
+  }
+
+  /* Create and inject an expanded hint block from raw HTML */
+  function addBlockFromHtml(html, key, link){
+    const block = document.createElement("div");
+    block.className = "hintBlock";
+    block.dataset.key = key;
+    block.innerHTML = `
+      <div class="hintHeader"></div>
+      <div class="hintBody">${html}</div>
+    `;
+    area.appendChild(block);
+
+    const header = block.querySelector(".hintHeader");
+    const pillSpan = findPillSpanForLink(link);
+    movePillIntoBlock(key, pillSpan, header);
+
+    setExpanded(link, true);
+    block.scrollIntoView({ block:"nearest", behavior:"smooth" });
+  }
+
+  /* Close block, remove it, move pill back to row */
+  function closeBlock(key, link){
+    const b = getBlock(key);
+    if (b) b.remove();
+    movePillBackToRow(key);
+    if (link) setExpanded(link, false);
+  }
+
+  /* ---------------------------------------------------------
+     CLICK HANDLER (TOGGLE)
+     - If already open: close + move pill back to row
+     - If closed: open block + move pill above content
+     --------------------------------------------------------- */
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a.hint");
+    if (!a) return;
+
+    const inOurSystem = a.closest("#hintRow") || a.closest("#hintContentArea");
+    if (!inOurSystem) return;
+
+    const key = keyOf(a);
+
+    if (getBlock(key)) {
+      e.preventDefault();
+      closeBlock(key, a);
+      const d = siblingHint(a);
+      if (d) d.style.display = "none";
+      return;
+    }
+
+    const d = siblingHint(a);
+    if (d) {
+      e.preventDefault();
+      addBlockFromHtml(d.innerHTML, key, a);
+      d.style.display = "none";
+    }
+  }, true);
+
+  /* ---------------------------------------------------------
+     "H" KEY SUPPORT (Anki-native hints)
+     - Anki reveals the hint payload internally when you press H
+     - We detect newly visible hint divs in the row
+     - We render them into our own blocks and then hide the payload
+     --------------------------------------------------------- */
+  function captureVisible(){
+    const divs = [...row.querySelectorAll("div.hint")].filter(d => d.offsetHeight > 0);
+    divs.forEach(d => {
+      const a = d.previousElementSibling;
+      if (!a || !a.classList || !a.classList.contains("hint")) return;
+
+      const key = keyOf(a);
+      if (!getBlock(key)) addBlockFromHtml(d.innerHTML, key, a);
+      else setExpanded(a, true);
+
+      d.style.display = "none";
+    });
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "h" || e.key === "H") setTimeout(captureVisible, 0);
+  });
+})();
+</script>
