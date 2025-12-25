@@ -1,6 +1,21 @@
+<!-- =========================================================
+     FRONT TEMPLATE
+     ---------------------------------------------------------
+     Purpose:
+     - Show the cloze question on the front.
+     - Preserve EFDR (Edit Cloze During Review) support by
+       rendering BOTH:
+         1) the normal cloze field
+         2) the editable cloze field
+       CSS decides which one is visible (desktop vs mobile).
+     ========================================================= -->
+
 <div class="card-wrapper">
   <div class="question">
+    <!-- Normal cloze rendering (review mode) -->
     <div class="clozefield">{{cloze:Text}}</div>
-    <div class="editcloze" id="text">{{edit:cloze:Text}}</div>
+
+    <!-- EFDR editable cloze rendering (allows editing during review) -->
+    <div class="editcloze">{{edit:cloze:Text}}</div>
   </div>
 </div>
