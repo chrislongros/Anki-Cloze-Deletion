@@ -1,14 +1,7 @@
-<!--
-BACK TEMPLATE
-- Shows the cloze again (answer side).
-- Optional Extra field.
-- Resource hint pills (UWorld/AMBOSS/FA/etc).
-- Clicking a pill toggles its hint block.
-- When opened, the SAME pill moves above its own content block.
-- "H" key still works: Anki reveals the hint internally; JS captures it and renders it.
-- NOTE: Do NOT write Anki template syntax like double-curly braces inside comments,
-  because Anki will parse it and error if the field doesn't exist.
--->
+<!-- ============================================ -->
+<!-- BACK TEMPLATE -->
+<!-- Copy everything below this line for Back Template -->
+<!-- ============================================ -->
 
 <div class="card-wrapper">
 
@@ -17,170 +10,214 @@ BACK TEMPLATE
     <div class="editcloze">{{edit:cloze:Text}}</div>
   </div>
 
+  <div class="frontBackDivider"></div>
+
   {{#Extra}}
   <div class="extra">{{Extra}}</div>
   {{/Extra}}
 
-  <!--
-  Hint row:
-  Each resource uses the Anki hint helper (e.g., ⟨hint:UWorld_2CK⟩).
-  That helper generates:
-  - a clickable link (class "hint")
-  - a hidden payload div (class "hint") containing the field HTML
-  We hide the payload with CSS and render the HTML into blocks ourselves.
-  -->
+  <!-- Resource Buttons (only show if field has content) -->
   <div id="hintRow">
-    {{#UWorld_2CK}}<span class="pill uworld">{{hint:UWorld_2CK}}</span>{{/UWorld_2CK}}
-    {{#AMBOSS}}<span class="pill amboss">{{hint:AMBOSS}}</span>{{/AMBOSS}}
-    {{#First_Aid}}<span class="pill fa">{{hint:First_Aid}}</span>{{/First_Aid}}
-    {{#Kaplan}}<span class="pill kaplan">{{hint:Kaplan}}</span>{{/Kaplan}}
-    {{#Pathoma}}<span class="pill pathoma">{{hint:Pathoma}}</span>{{/Pathoma}}
-    {{#UpToDate}}<span class="pill utd">{{hint:UpToDate}}</span>{{/UpToDate}}
-    {{#NBME}}<span class="pill nbme">{{hint:NBME}}</span>{{/NBME}}
-    {{#Additional_Resources}}<span class="pill add">{{hint:Additional_Resources}}</span>{{/Additional_Resources}}
+    {{#UWorld_3}}<span class="pill uworld" data-field="UWorld_3"><a class="hint" href="javascript:void(0)">UWorld_3</a></span>{{/UWorld_3}}
+    {{#UWorld_2CK}}<span class="pill uworld2ck" data-field="UWorld_2CK"><a class="hint" href="javascript:void(0)">UWorld_2CK</a></span>{{/UWorld_2CK}}
+    {{#NEJM}}<span class="pill nejm" data-field="NEJM"><a class="hint" href="javascript:void(0)">NEJM</a></span>{{/NEJM}}
+    {{#AMBOSS}}<span class="pill amboss" data-field="AMBOSS"><a class="hint" href="javascript:void(0)">AMBOSS</a></span>{{/AMBOSS}}
+    {{#First_Aid}}<span class="pill fa" data-field="First_Aid"><a class="hint" href="javascript:void(0)">First_Aid</a></span>{{/First_Aid}}
+    {{#Kaplan}}<span class="pill kaplan" data-field="Kaplan"><a class="hint" href="javascript:void(0)">Kaplan</a></span>{{/Kaplan}}
+    {{#Pathoma}}<span class="pill pathoma" data-field="Pathoma"><a class="hint" href="javascript:void(0)">Pathoma</a></span>{{/Pathoma}}
+    {{#UpToDate}}<span class="pill utd" data-field="UpToDate"><a class="hint" href="javascript:void(0)">UpToDate</a></span>{{/UpToDate}}
+    {{#NBME}}<span class="pill nbme" data-field="NBME"><a class="hint" href="javascript:void(0)">NBME</a></span>{{/NBME}}
+    {{#Additional_Resources}}<span class="pill add" data-field="Additional_Resources"><a class="hint" href="javascript:void(0)">Additional_Resources</a></span>{{/Additional_Resources}}
   </div>
 
-  <!-- Expanded hint blocks are injected here -->
   <div id="hintContentArea"></div>
+
+  <!-- Content Templates (payloads for each resource) -->
+  {{#UWorld_3}}<template data-field="UWorld_3">{{UWorld_3}}</template>{{/UWorld_3}}
+  {{#UWorld_2CK}}<template data-field="UWorld_2CK">{{UWorld_2CK}}</template>{{/UWorld_2CK}}
+  {{#NEJM}}<template data-field="NEJM">{{NEJM}}</template>{{/NEJM}}
+  {{#AMBOSS}}<template data-field="AMBOSS">{{AMBOSS}}</template>{{/AMBOSS}}
+  {{#First_Aid}}<template data-field="First_Aid">{{First_Aid}}</template>{{/First_Aid}}
+  {{#Kaplan}}<template data-field="Kaplan">{{Kaplan}}</template>{{/Kaplan}}
+  {{#Pathoma}}<template data-field="Pathoma">{{Pathoma}}</template>{{/Pathoma}}
+  {{#UpToDate}}<template data-field="UpToDate">{{UpToDate}}</template>{{/UpToDate}}
+  {{#NBME}}<template data-field="NBME">{{NBME}}</template>{{/NBME}}
+  {{#Additional_Resources}}<template data-field="Additional_Resources">{{Additional_Resources}}</template>{{/Additional_Resources}}
 
 </div>
 
 <script>
 (function () {
-  const row  = document.getElementById("hintRow");
+  const row = document.getElementById("hintRow");
   const area = document.getElementById("hintContentArea");
   if (!row || !area) return;
 
-  const placeholders = new Map();
-  const movedPills   = new Map();
+  // Store references for hotkey handler
+  window.__HP = window.__HP || {};
+  window.__HP.row = row;
+  window.__HP.area = area;
 
-  function esc(s){ return (s||"").replace(/\\/g,"\\\\").replace(/"/g,'\\"'); }
-
-  function pillClassOf(a){
-    const pill = a.closest(".pill");
-    if (!pill) return "";
-    return [...pill.classList].filter(c => c !== "pill").join(" ");
+  // Polyfills for older Anki versions
+  if (!Element.prototype.matches) {
+    Element.prototype.matches =
+      Element.prototype.msMatchesSelector ||
+      Element.prototype.webkitMatchesSelector ||
+      function (s) {
+        const m = (this.document || this.ownerDocument).querySelectorAll(s);
+        let i = m.length;
+        while (--i >= 0 && m.item(i) !== this) {}
+        return i > -1;
+      };
+  }
+  if (!Element.prototype.closest) {
+    Element.prototype.closest = function (s) {
+      let el = this;
+      while (el && el.nodeType === 1) {
+        if (el.matches(s)) return el;
+        el = el.parentElement || el.parentNode;
+      }
+      return null;
+    };
   }
 
-  function keyOf(a){
-    if (a.dataset.hkey) return a.dataset.hkey;
-    const k = (a.textContent || "").trim() + "||" + pillClassOf(a);
-    a.dataset.hkey = k;
-    return k;
-  }
+  // Build template map
+  const templates = {};
+  document.querySelectorAll("template[data-field]").forEach(t => {
+    templates[t.getAttribute("data-field")] = t;
+  });
+  window.__HP.templates = templates;
 
-  function getBlock(key){
-    return area.querySelector('.hintBlock[data-key="' + esc(key) + '"]');
-  }
+  const blockId = f => "hintBlock__" + f;
+  const isOpen = f => !!document.getElementById(blockId(f));
 
-  function setExpanded(a, on){
-    a.classList.toggle("activeHint", on);
-    a.setAttribute("aria-expanded", on ? "true" : "false");
-  }
-
-  function siblingHint(a){
-    const d = a.nextElementSibling;
-    return d && d.classList && d.classList.contains("hint") ? d : null;
-  }
-
-  function findPillSpanForLink(a){
-    return a.closest(".pill");
-  }
-
-  function movePillIntoBlock(key, pillSpan, header){
-    if (!pillSpan || !header) return;
-
-    if (!placeholders.has(key)) {
-      const ph = document.createElement("span");
-      ph.className = "pillPlaceholder";
-      ph.dataset.key = key;
-      ph.style.display = "none";
-      pillSpan.parentNode.insertBefore(ph, pillSpan);
-      placeholders.set(key, ph);
-    }
-
-    movedPills.set(key, pillSpan);
-    header.appendChild(pillSpan);
-  }
-
-  function movePillBackToRow(key){
-    const pillSpan = movedPills.get(key);
-    const ph = placeholders.get(key);
-    if (!pillSpan || !ph) return;
-
-    ph.parentNode.insertBefore(pillSpan, ph);
-    ph.remove();
-
-    movedPills.delete(key);
-    placeholders.delete(key);
-  }
-
-  function addBlockFromHtml(html, key, link){
-    const block = document.createElement("div");
-    block.className = "hintBlock";
-    block.dataset.key = key;
-    block.innerHTML = `
-      <div class="hintHeader"></div>
-      <div class="hintBody">${html}</div>
-    `;
-    area.appendChild(block);
-
-    const header = block.querySelector(".hintHeader");
-    const pillSpan = findPillSpanForLink(link);
-    movePillIntoBlock(key, pillSpan, header);
-
-    setExpanded(link, true);
-    block.scrollIntoView({ block:"nearest", behavior:"smooth" });
-  }
-
-  function closeBlock(key, link){
-    const b = getBlock(key);
-    if (b) b.remove();
-    movePillBackToRow(key);
-    if (link) setExpanded(link, false);
-  }
-
-  document.addEventListener("click", (e) => {
-    const a = e.target.closest("a.hint");
-    if (!a) return;
-
-    const inOurSystem = a.closest("#hintRow") || a.closest("#hintContentArea");
-    if (!inOurSystem) return;
-
-    const key = keyOf(a);
-
-    if (getBlock(key)) {
-      e.preventDefault();
-      closeBlock(key, a);
-      const d = siblingHint(a);
-      if (d) d.style.display = "none";
-      return;
-    }
-
-    const d = siblingHint(a);
-    if (d) {
-      e.preventDefault();
-      addBlockFromHtml(d.innerHTML, key, a);
-      d.style.display = "none";
-    }
-  }, true);
-
-  function captureVisible(){
-    const divs = [...row.querySelectorAll("div.hint")].filter(d => d.offsetHeight > 0);
-    divs.forEach(d => {
-      const a = d.previousElementSibling;
-      if (!a || !a.classList || !a.classList.contains("hint")) return;
-
-      const key = keyOf(a);
-      if (!getBlock(key)) addBlockFromHtml(d.innerHTML, key, a);
-      else setExpanded(a, true);
-
-      d.style.display = "none";
+  function frameImages(container) {
+    if (!container) return;
+    const imgs = Array.from(container.querySelectorAll("img"));
+    imgs.forEach(img => {
+      if (img.closest(".imgFrame")) return;
+      const frame = document.createElement("div");
+      frame.className = "imgFrame";
+      img.parentNode.insertBefore(frame, img);
+      frame.appendChild(img);
     });
   }
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "h" || e.key === "H") setTimeout(captureVisible, 0);
-  });
+  function openHint(field, btn) {
+    if (isOpen(field)) {
+      const existing = document.getElementById(blockId(field));
+      if (existing) existing.scrollIntoView({ behavior: "smooth", block: "start" });
+      btn.classList.add("activeHint");
+      return;
+    }
+
+    const tpl = templates[field];
+    if (!tpl) return;
+
+    const block = document.createElement("div");
+    block.className = "hintBlock";
+    block.id = blockId(field);
+    
+    // Create header with field name
+    const header = document.createElement("div");
+    header.className = "hintHeader";
+    header.textContent = btn.textContent.trim().replace(/[+−]/g, '').trim();
+    
+    // Create body
+    const body = document.createElement("div");
+    body.className = "hintBody";
+    body.tabIndex = -1;
+    body.appendChild(tpl.content.cloneNode(true));
+    frameImages(body);
+    
+    block.appendChild(header);
+    block.appendChild(body);
+
+    area.appendChild(block);
+    btn.classList.add("activeHint");
+
+    setTimeout(() => {
+      block.scrollIntoView({ behavior: "smooth", block: "start" });
+      body.focus({ preventScroll: true });
+    }, 50);
+  }
+
+  function closeHint(field, btn) {
+    const block = document.getElementById(blockId(field));
+    if (block) {
+      block.classList.add('closing');
+      setTimeout(() => block.remove(), 300);
+    }
+    btn.classList.remove("activeHint");
+  }
+
+  function togglePill(pill) {
+    const field = pill && pill.getAttribute("data-field");
+    if (!field) return;
+    const btn = pill.querySelector("a.hint");
+    if (!btn) return;
+    isOpen(field) ? closeHint(field, btn) : openHint(field, btn);
+  }
+
+  // Bind click handler once per card
+  if (!row.dataset.hpBound) {
+    row.dataset.hpBound = "1";
+    row.addEventListener("click", function (e) {
+      const pill = e.target.closest(".pill");
+      if (!pill) return;
+      e.preventDefault();
+      e.stopPropagation();
+      togglePill(pill);
+    }, true);
+  }
+
+  // Expose for hotkeys
+  window.__HP.togglePill = togglePill;
+  window.__HP.isOpen = isOpen;
+  window.__HP.closeHint = closeHint;
+
+  // Global hotkey handler (H key to toggle hints)
+  if (!window.__HP.hotkeysBound) {
+    window.__HP.hotkeysBound = true;
+
+    document.addEventListener("keydown", function (e) {
+      const t = e.target;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+
+      const hp = window.__HP;
+      if (!hp || !hp.row || !hp.togglePill) return;
+
+      const key = (e.key || "").toLowerCase();
+      if (key !== "h") return;
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const pills = Array.from(hp.row.querySelectorAll(".pill[data-field]"));
+
+      if (e.ctrlKey || e.metaKey) {
+        // Ctrl+H or Cmd+H: Close all hints
+        pills.forEach(p => {
+          const a = p.querySelector("a.hint");
+          const field = p.getAttribute("data-field");
+          if (a && a.classList.contains("activeHint") && field) {
+            closeHint(field, a);
+          }
+        });
+      } else if (e.shiftKey) {
+        // Shift+H: Open all hints
+        pills.forEach(p => {
+          const a = p.querySelector("a.hint");
+          if (a && !a.classList.contains("activeHint")) hp.togglePill(p);
+        });
+      } else {
+        // H: Open next hint
+        const next = pills.find(p => {
+          const a = p.querySelector("a.hint");
+          return a && !a.classList.contains("activeHint");
+        });
+        if (next) hp.togglePill(next);
+      }
+    }, true);
+  }
 })();
 </script>
