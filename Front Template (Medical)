@@ -1,9 +1,7 @@
-<!--
-FRONT TEMPLATE
-- Shows the cloze question.
-- EFDR support: both normal cloze and editable cloze are rendered.
-- CSS decides which one is visible (desktop vs mobile).
--->
+<!-- ============================================ -->
+<!-- FRONT TEMPLATE -->
+<!-- Copy everything below this line for Front Template -->
+<!-- ============================================ -->
 
 <div class="card-wrapper">
   <div class="question">
