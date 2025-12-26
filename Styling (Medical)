@@ -1,305 +1,475 @@
-/* =========================================================
-   GLOBAL RESET
-   ========================================================= */
+<!-- ============================================ -->
+<!-- STYLING (CSS) -->
+<!-- Copy everything below this line for Styling -->
+<!-- ============================================ -->
 
-/* Prevent Anki / AnkiDroid from forcing full-height layouts */
-html, body{
-  height:auto !important;
+html, body { 
+  height: auto !important;
+  margin: 0;
+  padding: 0;
 }
 
-/* Disable mobile text autoscaling (important for AnkiDroid) */
-body{
+body {
   -webkit-text-size-adjust: 100% !important;
   text-size-adjust: 100% !important;
 }
 
-/* Kill any inherited flex centering from other note types */
-body, .card{
-  display:block !important;
-  align-items:initial !important;
-  justify-content:initial !important;
+body, .card {
+  display: block !important;
+  align-items: initial !important;
+  justify-content: initial !important;
 }
 
-
-/* =========================================================
-   CARD BASE STYLES
-   ========================================================= */
-
-.card{
-  background:#1e1e1e;
-  color:#eaeaea;
-  font-family:Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size:28px;
-  text-align:center;
-  padding:40px;
+.card {
+  background: #1e1e1e;
+  color: #eaeaea;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 28px;
+  text-align: center;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
-/* Keep content centered horizontally with readable width */
-.card-wrapper{
-  max-width:1100px;
-  margin:0 auto;
+.card-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ============================================ */
+/* QUESTION SECTION */
+/* ============================================ */
 
-/* =========================================================
-   QUESTION + EXTRA TEXT
-   ========================================================= */
-
-.question{
-  font-size:34px;
-  font-weight:500;
-  line-height:1.45;
-  margin-bottom:20px;
+.question { 
+  order: 0;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.45;
+  margin: 0 0 20px 0;
 }
 
-.extra{
-  font-size:24px;
-  color:#c88f8f;
-  opacity:.95;
-  margin-top:18px;
+/* ============================================ */
+/* DIVIDER */
+/* ============================================ */
+
+.frontBackDivider {
+  order: 10;
+  width: 100%;
+  height: 3px;
+  margin: 26px auto 18px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255,255,255,.55) 20%,
+    rgba(255,255,255,.90) 50%,
+    rgba(255,255,255,.55) 80%,
+    transparent
+  );
+  box-shadow: 0 0 16px rgba(255,255,255,.22);
+  border-radius: 2px;
 }
 
-/* Cloze highlight */
-.cloze{
-  color:#4caf50;
-  font-weight:700;
+/* ============================================ */
+/* EXTRA FIELD */
+/* ============================================ */
+
+.extra {
+  order: 20;
+  font-size: 24px;
+  color: #c88f8f;
+  opacity: .95;
+  margin-top: 0;
+  margin-bottom: 16px;
+  text-align: center;
 }
 
-
-/* =========================================================
-   EFDR (Edit Cloze During Review) SUPPORT
-   ========================================================= */
-
-/* Hide cloze field during review, show edit field */
-.clozefield{ display:none; }
-.editcloze{ display:block; }
-
-
-/* =========================================================
-   IMAGES (GLOBAL)
-   ========================================================= */
-
-/* Prevent stretched images and reduce default margins */
-.card img{
-  max-width:100% !important;
-  display:block;
-  margin:6px auto !important;
-  border-radius:10px;
+/* Hide extra field images completely */
+.extra img {
+  display: none !important;
 }
 
+/* ============================================ */
+/* HINT BUTTONS ROW */
+/* ============================================ */
 
-/* =========================================================
-   HINT BUTTON ROW (PRE-EXPANSION)
-   ========================================================= */
-
-#hintRow{
-  margin-top:26px;
-  display:flex;
-  gap:12px;
-  justify-content:center;
-  flex-wrap:wrap;
+#hintRow {
+  order: 11;
+  margin-top: 0;
+  margin-bottom: 14px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
+/* ============================================ */
+/* HINT CONTENT AREA */
+/* ============================================ */
 
-/* =========================================================
-   PILL WRAPPER
-   ========================================================= */
-
-/* The outer span that contains the button + hidden payload */
-.pill{
-  display:inline-flex !important;
-  flex:none !important;
-  align-self:flex-start !important;
-  width:fit-content !important;
-  height:auto !important;
+#hintContentArea {
+  order: 30;
+  margin-top: 14px;
 }
 
-/* IMPORTANT:
-   Always hide the native hint payload div,
-   even after the pill is moved into expanded content */
-.pill > div.hint{
-  display:none !important;
+.card-wrapper > template { 
+  display: none !important; 
 }
 
+/* ============================================ */
+/* CLOZE STYLING */
+/* ============================================ */
 
-/* =========================================================
-   HINT BUTTON (SAME STYLE EVERYWHERE)
-   ========================================================= */
-
-a.hint{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  flex:none !important;
-
-  padding:10px 22px !important;
-  border-radius:14px !important;
-  line-height:1.1 !important;
-
-  background:rgba(255,255,255,.06) !important;
-  border:1px solid rgba(255,255,255,.18) !important;
-
-  font-size:14px !important;
-  font-weight:650 !important;
-  letter-spacing:.2px !important;
-
-  text-decoration:none !important;
-  white-space:nowrap !important;
-  user-select:none !important;
-
-  box-shadow:0 2px 10px rgba(0,0,0,.18) !important;
-  position:relative !important;
+.cloze { 
+  color: #4caf50; 
+  font-weight: 700;
 }
 
-/* + indicator when collapsed */
-a.hint::after{
-  content:" +" !important;
-  margin-left:10px !important;
-  font-weight:900 !important;
-  opacity:.85 !important;
+.clozefield { 
+  display: none; 
 }
 
-/* − indicator when expanded */
-a.hint.activeHint::after{
-  content:" −" !important;
-  opacity:1 !important;
+.editcloze { 
+  display: block; 
 }
 
-/* Expanded visual emphasis */
-a.hint.activeHint{
-  border-color:rgba(255,255,255,.65) !important;
-  box-shadow:
-    0 0 0 2px rgba(255,255,255,.15) inset,
-    0 4px 18px rgba(0,0,0,.35) !important;
+/* ============================================ */
+/* IMAGES */
+/* ============================================ */
+
+.card img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 4px auto !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
 }
 
-
-/* =========================================================
-   RESOURCE COLOR CODING
-   ========================================================= */
-
-.pill.uworld  a.hint{ color:#5fd38d !important; }
-.pill.amboss  a.hint{ color:#66aaff !important; }
-.pill.fa      a.hint{ color:#ff9a9a !important; }
-.pill.kaplan  a.hint{ color:#c29bff !important; }
-.pill.pathoma a.hint{ color:#e0c3a8 !important; }
-.pill.utd     a.hint{ color:#66e0c2 !important; }
-.pill.nbme    a.hint{ color:#cfd8dc !important; }
-.pill.add     a.hint{ color:#d0d0d0 !important; }
-
-/* Strong background color when expanded */
-.pill.uworld  a.hint.activeHint{ background:rgba(95,211,141,.35) !important; }
-.pill.amboss  a.hint.activeHint{ background:rgba(102,170,255,.35) !important; }
-.pill.fa      a.hint.activeHint{ background:rgba(255,154,154,.35) !important; }
-.pill.kaplan  a.hint.activeHint{ background:rgba(194,155,255,.35) !important; }
-.pill.pathoma a.hint.activeHint{ background:rgba(224,195,168,.35) !important; }
-.pill.utd     a.hint.activeHint{ background:rgba(102,224,194,.35) !important; }
-.pill.nbme    a.hint.activeHint{ background:rgba(207,216,220,.35) !important; }
-.pill.add     a.hint.activeHint{ background:rgba(255,255,255,.28) !important; }
-
-
-/* =========================================================
-   EXPANDED HINT CONTENT AREA
-   ========================================================= */
-
-#hintContentArea{
-  margin-top:14px;
+.imgFrame {
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 4px auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
 }
 
-.hintBlock{
-  max-width:980px;
-  margin:0 auto 14px;
+/* ============================================ */
+/* PILLS (Button Containers) */
+/* ============================================ */
+
+.pill {
+  display: inline-flex !important;
+  flex: none !important;
+  width: fit-content !important;
 }
 
-/* Header that holds the moved pill button */
-.hintHeader{
-  display:flex;
-  justify-content:flex-start;
-  align-items:flex-start;
-  margin:0 0 8px 0;
+/* ============================================ */
+/* HINT BUTTONS */
+/* ============================================ */
+
+a.hint {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 22px !important;
+  border-radius: 12px !important;
+  line-height: 1.1 !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  font-size: 14px !important;
+  font-weight: 650 !important;
+  letter-spacing: .2px !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  user-select: none !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,.18) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
-/* Main hint content */
-.hintBody{
-  padding:14px 16px;
-  border-radius:12px;
-  background:rgba(255,255,255,.04);
-  text-align:left;
-  font-size:18px;
-  line-height:1.45;
-  box-shadow:0 10px 28px rgba(0,0,0,.20);
+a.hint:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0,0,0,.4) !important;
+  background: rgba(255,255,255,.12) !important;
 }
 
-
-/* =========================================================
-   IMAGE SPACING INSIDE HINT CONTENT
-   ========================================================= */
-
-/* Reduce large vertical gaps between images */
-.hintBody img{
-  margin:6px auto !important;
+a.hint:active {
+  transform: translateY(0) scale(0.98);
+  transition: all 0.1s ease;
 }
 
-/* Even tighter spacing for consecutive images */
-.hintBody img + img{
-  margin-top:4px !important;
+a.hint::after {
+  content: " +" !important;
+  margin-left: 10px !important;
+  font-weight: 900 !important;
+  opacity: .85 !important;
 }
 
-/* Reduce spacing between all child elements
-   (AMBOSS / FA HTML tends to add huge margins) */
-.hintBody > *{
-  margin-top:6px !important;
-  margin-bottom:6px !important;
+a.hint.activeHint::after {
+  content: " −" !important;
+  opacity: 1 !important;
 }
 
+a.hint.activeHint {
+  border-color: rgba(255,255,255,.65) !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.15) inset, 0 4px 18px rgba(0,0,0,.35) !important;
+  transform: scale(1.0);
+}
 
-/* =========================================================
-   MOBILE + ANKIDROID ADJUSTMENTS
-   ========================================================= */
+/* ============================================ */
+/* RESOURCE COLOR THEMES */
+/* ============================================ */
 
-@media (max-width:1100px){
-  .card{
-    padding:18px;
-    font-size:20px;
-    text-align:left;
+.pill.uworld a.hint { color: #5fd38d !important; }
+.pill.uworld2ck a.hint { color: #7fe9a8 !important; }
+.pill.nejm a.hint { color: #ffd27a !important; }
+.pill.amboss a.hint { color: #66aaff !important; }
+.pill.fa a.hint { color: #ff9a9a !important; }
+.pill.kaplan a.hint { color: #c29bff !important; }
+.pill.pathoma a.hint { color: #e0c3a8 !important; }
+.pill.utd a.hint { color: #66e0c2 !important; }
+.pill.nbme a.hint { color: #cfd8dc !important; }
+.pill.add a.hint { color: #d0d0d0 !important; }
+
+/* Active state backgrounds */
+.pill.uworld a.hint.activeHint { background: rgba(95,211,141,.35) !important; }
+.pill.uworld2ck a.hint.activeHint { background: rgba(127,233,168,.35) !important; }
+.pill.nejm a.hint.activeHint { background: rgba(255,210,122,.30) !important; }
+.pill.amboss a.hint.activeHint { background: rgba(102,170,255,.35) !important; }
+.pill.fa a.hint.activeHint { background: rgba(255,154,154,.35) !important; }
+.pill.kaplan a.hint.activeHint { background: rgba(194,155,255,.35) !important; }
+.pill.pathoma a.hint.activeHint { background: rgba(224,195,168,.35) !important; }
+.pill.utd a.hint.activeHint { background: rgba(102,224,194,.35) !important; }
+.pill.nbme a.hint.activeHint { background: rgba(207,216,220,.35) !important; }
+.pill.add a.hint.activeHint { background: rgba(255,255,255,.28) !important; }
+
+/* ============================================ */
+/* HINT BLOCKS (Expanded Content) */
+/* ============================================ */
+
+.hintBlock {
+  max-width: 980px;
+  margin: 0 auto 20px;
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hintBlock.closing {
+  animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hintHeader {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom: 10px;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0;
+  color: #eaeaea;
+  animation: fadeIn 0.4s ease 0.1s forwards;
+}
+
+.hintBody {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  text-align: left;
+  font-size: 18px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  color: #eaeaea;
+  opacity: 0;
+  animation: fadeIn 0.4s ease 0.15s forwards;
+}
+
+.hintBody p,
+.hintBody div,
+.hintBody section,
+.hintBody article,
+.hintBody span,
+.hintBody ul,
+.hintBody ol,
+.hintBody li {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Add spacing only between text paragraphs */
+.hintBody p + p {
+  margin-top: 12px !important;
+}
+
+.hintBody *:not(img):not(iframe):not(video) {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
+
+.hintBody {
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  color: #eaeaea !important;
+}
+
+.hintBody ul,
+.hintBody ol {
+  padding-left: 20px !important;
+  margin: 8px 0 !important;
+}
+
+.hintBody li {
+  margin: 4px 0 !important;
+  padding: 0 !important;
+}
+
+.hintBody img,
+.hintBody svg,
+.hintBody video,
+.hintBody iframe {
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 auto !important;
+  float: none !important;
+  border-radius: 8px !important;
+  background: none !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3) !important;
+  padding: 0 !important;
+}
+
+/* Add spacing between consecutive images or between images and text */
+.hintBody img + img,
+.hintBody img + p,
+.hintBody img + div,
+.hintBody p + img,
+.hintBody div + img {
+  margin-top: 4px !important;
+}
+
+/* ============================================ */
+/* TABLES */
+/* ============================================ */
+
+.hintBody table {
+  max-width: 100% !important;
+  width: 100% !important;
+  border-collapse: collapse;
+  margin: 12px 0;
+  background: rgba(255,255,255,.02);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.hintBody td,
+.hintBody th {
+  padding: 8px 12px;
+  vertical-align: top;
+  border: 1px solid rgba(255,255,255,.1);
+}
+
+.hintBody th {
+  background: rgba(255,255,255,.05);
+  font-weight: 600;
+}
+
+/* ============================================ */
+/* MOBILE OPTIMIZATION */
+/* ============================================ */
+
+@media (max-width: 1100px) {
+  .card { 
+    padding: 20px; 
+    font-size: 20px; 
+    text-align: left; 
+  }
+  
+  .question { 
+    font-size: 26px;
+    margin-bottom: 16px;
+  }
+  
+  .extra { 
+    font-size: 18px; 
   }
 
-  .question{ font-size:24px; }
-  .extra{ font-size:18px; }
-
-  #hintRow{
-    justify-content:center;
-    gap:10px;
+  .frontBackDivider { 
+    margin: 20px 0 16px; 
   }
 
-  a.hint{
-    padding:8px 14px !important;
-    font-size:12.5px !important;
-    border-radius:12px !important;
+  a.hint {
+    padding: 9px 16px !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
   }
 
-  a.hint::after{
-    margin-left:8px !important;
+  #hintRow { 
+    margin-bottom: 12px;
+    gap: 8px;
   }
 
-  .hintBody{
-    font-size:16px;
-    padding:12px 14px;
-    line-height:1.4;
+  .hintBody {
+    font-size: 16px;
+    padding: 10px 12px;
+    line-height: 1.5;
+  }
+  
+  .hintBlock {
+    margin-bottom: 16px;
   }
 
-  .hintBody img{
-    margin:4px auto !important;
+  /* Show non-editable cloze on mobile */
+  .clozefield { 
+    display: block; 
   }
-
-  .clozefield{ display:block; }
-  .editcloze{ display:none; }
-}
-
-/* Extra safety for AnkiDroid WebView */
-body.mobile .hintBody img,
-body.android .hintBody img,
-.mobile .hintBody img,
-.android .hintBody img{
-  margin:4px auto !important;
-}
+  
+  .editcloze { 
+    display: none; 
+  }
+  
+  /* Better image sizing on mobile */
+  .card img,
+  .extra img {
+    max-width: 100% !important;
+    margin: 3px auto !important;
+  }
