@@ -1,11 +1,21 @@
 <!-- ============================================ -->
-<!-- FRONT TEMPLATE -->
-<!-- Copy everything below this line for Front Template -->
+<!-- CLOZE-CHATGPT - FRONT TEMPLATE -->
 <!-- ============================================ -->
+<!-- 
+  This template displays the question/cloze deletion on the front of the card.
+  It uses two different display modes:
+  - clozefield: For mobile (non-editable, simpler rendering)
+  - editcloze: For desktop (editable, allows clicking into cloze)
+  
+  The CSS controls which one is visible based on screen size.
+-->
 
 <div class="card-wrapper">
   <div class="question">
+    <!-- Mobile-friendly cloze display (hidden on desktop via CSS) -->
     <div class="clozefield">{{cloze:Text}}</div>
+    
+    <!-- Desktop editable cloze display (hidden on mobile via CSS) -->
     <div class="editcloze">{{edit:cloze:Text}}</div>
   </div>
 </div>
