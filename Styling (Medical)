@@ -4,6 +4,7 @@
 /*
   This stylesheet provides:
   - Dark theme styling (#1e1e1e background)
+  - Full-width desktop layout with vertical centering
   - Responsive design (desktop + mobile)
   - Colorful hint buttons for medical resources
   - Smooth animations for hint expansion
@@ -14,6 +15,12 @@
   - Text: #eaeaea (light gray)
   - Cloze answers: #4caf50 (green)
   - Extra field: #c88f8f (muted pink)
+  
+  Desktop features:
+  - 1400px max-width for wide screens
+  - Vertical centering for comfortable reading
+  - Left-aligned text for better readability
+  - 36px question font size
 */
 
 /* ============================================ */
@@ -48,14 +55,18 @@ body, .card {
   color: #eaeaea;                /* Light text */
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 28px;
-  text-align: center;
-  padding: 40px;
+  text-align: left;              /* Left-align for better readability */
+  padding: 40px 60px;            /* Generous padding, more on sides */
   box-sizing: border-box;
+  min-height: 100vh;             /* Full viewport height */
+  display: flex;
+  align-items: center;           /* Vertically center content */
 }
 
 /* Inner wrapper - constrains content width on large screens */
 .card-wrapper {
-  max-width: 1100px;
+  max-width: 1400px;             /* Wide max-width for desktop */
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -66,9 +77,9 @@ body, .card {
 /* ============================================ */
 
 .question { 
-  font-size: 34px;
+  font-size: 36px;               /* Large font for desktop readability */
   font-weight: 500;
-  line-height: 1.45;             /* Comfortable line spacing */
+  line-height: 1.5;              /* Comfortable line spacing */
   margin: 0;
 }
 
@@ -127,7 +138,7 @@ body, .card {
   margin-bottom: 14px;
   display: flex;
   gap: 12px;                     /* Space between buttons */
-  justify-content: center;
+  justify-content: flex-start;   /* Left-align on desktop */
   flex-wrap: wrap;               /* Wrap to next line on small screens */
 }
 
@@ -289,7 +300,7 @@ a.hint.activeHint {
 /* Container for the revealed hint content */
 
 .hintBlock {
-  max-width: 980px;
+  max-width: 100%;               /* Full width within card-wrapper */
   margin: 0 auto 20px;
   animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -440,7 +451,9 @@ a.hint.activeHint {
   .card { 
     padding: 20px;               /* Less padding on mobile */
     font-size: 20px;             /* Smaller base font */
-    text-align: left;            /* Left-align for readability */
+    text-align: left;            /* Keep left-align */
+    min-height: auto;            /* Remove min-height on mobile */
+    display: block;              /* Remove flex centering on mobile */
   }
   
   .question { 
@@ -466,6 +479,7 @@ a.hint.activeHint {
   #hintRow { 
     margin-bottom: 12px;
     gap: 8px;
+    justify-content: center;     /* Center buttons on mobile */
   }
 
   .hintBody {
