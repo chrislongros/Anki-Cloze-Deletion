@@ -1,62 +1,14 @@
-<!-- ============================================ -->
-<!-- CLOZE-CHATGPT - BACK TEMPLATE -->
-<!-- ============================================ -->
-<!-- 
-  This template displays:
-  1. The answered cloze question (with revealed answers)
-  2. A colorful gradient divider
-  3. Optional "Extra" field for additional notes
-  4. Expandable hint buttons for various medical resources
-     (UWorld, AMBOSS, First Aid, etc.)
-  
-  The hint system uses JavaScript to toggle content visibility
-  with smooth animations.
--->
-
 <div class="card-wrapper">
 
-  <!-- ==================== -->
-  <!-- QUESTION SECTION -->
-  <!-- ==================== -->
-  <!-- Same structure as front, shows the answered cloze -->
   <div class="question">
-    <div class="clozefield">{{cloze:Text}}</div>
-    <div class="editcloze">{{edit:cloze:Text}}</div>
+    {{edit:cloze:Text}}
   </div>
 
-  <!-- ==================== -->
-  <!-- DIVIDER -->
-  <!-- ==================== -->
-  <!-- Rainbow gradient line separating question from extra content -->
-  <div class="frontBackDivider"></div>
-
-  <!-- ==================== -->
-  <!-- EXTRA FIELD -->
-  <!-- ==================== -->
-  <!-- Optional field for additional notes, only shows if content exists -->
   {{#Extra}}
-  <div class="extra">{{Extra}}</div>
+  <div class="frontBackDivider"></div>
+  <div class="extra">{{edit:Extra}}</div>
   {{/Extra}}
 
-  <!-- ==================== -->
-  <!-- RESOURCE HINT BUTTONS -->
-  <!-- ==================== -->
-  <!-- 
-    Each button only appears if the corresponding field has content.
-    Clicking a button expands/collapses the associated resource content.
-    
-    Available resources:
-    - UWorld_3: UWorld Step 3 explanations
-    - UWorld_2CK: UWorld Step 2 CK explanations
-    - NEJM: New England Journal of Medicine references
-    - AMBOSS: AMBOSS library content
-    - First_Aid: First Aid book references
-    - Kaplan: Kaplan review content
-    - Pathoma: Pathoma explanations
-    - UpToDate: UpToDate clinical references
-    - NBME: NBME-related content
-    - Additional_Resources: Any other resources
-  -->
   <div id="hintRow">
     {{#UWorld_3}}<span class="pill uworld" data-field="UWorld_3"><a class="hint" href="javascript:void(0)">UWorld_3</a></span>{{/UWorld_3}}
     {{#UWorld_2CK}}<span class="pill uworld2ck" data-field="UWorld_2CK"><a class="hint" href="javascript:void(0)">UWorld_2CK</a></span>{{/UWorld_2CK}}
@@ -70,20 +22,8 @@
     {{#Additional_Resources}}<span class="pill add" data-field="Additional_Resources"><a class="hint" href="javascript:void(0)">Additional_Resources</a></span>{{/Additional_Resources}}
   </div>
 
-  <!-- ==================== -->
-  <!-- HINT CONTENT AREA -->
-  <!-- ==================== -->
-  <!-- Expanded hint content gets injected here by JavaScript -->
   <div id="hintContentArea"></div>
 
-  <!-- ==================== -->
-  <!-- CONTENT TEMPLATES -->
-  <!-- ==================== -->
-  <!-- 
-    Hidden templates that store the actual content for each resource.
-    The JavaScript clones these templates when a hint button is clicked.
-    Using <template> tags keeps content hidden until needed.
-  -->
   {{#UWorld_3}}<template data-field="UWorld_3">{{UWorld_3}}</template>{{/UWorld_3}}
   {{#UWorld_2CK}}<template data-field="UWorld_2CK">{{UWorld_2CK}}</template>{{/UWorld_2CK}}
   {{#NEJM}}<template data-field="NEJM">{{NEJM}}</template>{{/NEJM}}
@@ -97,43 +37,28 @@
 
 </div>
 
-<!-- ============================================ -->
-<!-- HINT TOGGLE JAVASCRIPT -->
-<!-- ============================================ -->
 <script>
-(function () {
-  // Get references to the button row and content area
-  const row = document.getElementById("hintRow");
-  const area = document.getElementById("hintContentArea");
+(function() {
+  var row = document.getElementById("hintRow");
+  var area = document.getElementById("hintContentArea");
   if (!row || !area) return;
 
-  // Store references globally for hotkey handler
-  window.__HP = window.__HP || {};
-  window.__HP.row = row;
-  window.__HP.area = area;
-
-  // ==================== 
-  // POLYFILLS
-  // ====================
-  // For compatibility with older Anki versions that may lack modern JS methods
-  
-  // Element.matches polyfill
-  if (!Element.prototype.matches) {
-    Element.prototype.matches =
-      Element.prototype.msMatchesSelector ||
-      Element.prototype.webkitMatchesSelector ||
-      function (s) {
-        const m = (this.document || this.ownerDocument).querySelectorAll(s);
-        let i = m.length;
-        while (--i >= 0 && m.item(i) !== this) {}
-        return i > -1;
-      };
+  // Show divider if hints exist but no Extra
+  var hasHints = row.querySelectorAll(".pill[data-field]").length > 0;
+  var hasExtra = document.querySelector(".extra");
+  if (hasHints && !hasExtra) {
+    var divider = document.createElement("div");
+    divider.className = "frontBackDivider";
+    row.parentNode.insertBefore(divider, row);
   }
-  
-  // Element.closest polyfill
+
+  // Polyfills
+  if (!Element.prototype.matches) {
+    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+  }
   if (!Element.prototype.closest) {
-    Element.prototype.closest = function (s) {
-      let el = this;
+    Element.prototype.closest = function(s) {
+      var el = this;
       while (el && el.nodeType === 1) {
         if (el.matches(s)) return el;
         el = el.parentElement || el.parentNode;
@@ -142,182 +67,137 @@
     };
   }
 
-  // ==================== 
-  // BUILD TEMPLATE MAP
-  // ====================
-  // Create a lookup object mapping field names to their template elements
-  const templates = {};
-  document.querySelectorAll("template[data-field]").forEach(t => {
-    templates[t.getAttribute("data-field")] = t;
-  });
-  window.__HP.templates = templates;
-
-  // ==================== 
-  // HELPER FUNCTIONS
-  // ====================
-  
-  // Generate unique ID for each hint block
-  const blockId = f => "hintBlock__" + f;
-  
-  // Check if a hint is currently open
-  const isOpen = f => !!document.getElementById(blockId(f));
-
-  // Wrap images in a frame div for consistent styling
-  function frameImages(container) {
-    if (!container) return;
-    const imgs = Array.from(container.querySelectorAll("img"));
-    imgs.forEach(img => {
-      if (img.closest(".imgFrame")) return; // Already framed
-      const frame = document.createElement("div");
-      frame.className = "imgFrame";
-      img.parentNode.insertBefore(frame, img);
-      frame.appendChild(img);
-    });
+  // Collect templates
+  var templates = {};
+  var tpls = document.querySelectorAll("template[data-field]");
+  for (var i = 0; i < tpls.length; i++) {
+    templates[tpls[i].getAttribute("data-field")] = tpls[i];
   }
 
-  // ==================== 
-  // OPEN HINT
-  // ====================
-  // Creates and displays the expanded hint content
+  function blockId(f) { return "hintBlock__" + f; }
+  function isOpen(f) { return !!document.getElementById(blockId(f)); }
+
   function openHint(field, btn) {
-    // If already open, just scroll to it
     if (isOpen(field)) {
-      const existing = document.getElementById(blockId(field));
+      var existing = document.getElementById(blockId(field));
       if (existing) existing.scrollIntoView({ behavior: "smooth", block: "start" });
-      btn.classList.add("activeHint");
+      if (btn) btn.classList.add("activeHint");
       return;
     }
 
-    // Get the template for this field
-    const tpl = templates[field];
+    var tpl = templates[field];
     if (!tpl) return;
 
-    // Create the hint block container
-    const block = document.createElement("div");
+    var block = document.createElement("div");
     block.className = "hintBlock";
     block.id = blockId(field);
-    
-    // Create header with the resource name
-    const header = document.createElement("div");
+
+    var header = document.createElement("div");
     header.className = "hintHeader";
-    header.textContent = btn.textContent.trim().replace(/[+−]/g, '').trim();
-    
-    // Create body with the actual content
-    const body = document.createElement("div");
+    header.textContent = (btn ? btn.textContent : field).replace(/[+−]/g, "").trim();
+
+    var body = document.createElement("div");
     body.className = "hintBody";
-    body.tabIndex = -1; // Allow focus for accessibility
-    body.appendChild(tpl.content.cloneNode(true)); // Clone template content
-    frameImages(body); // Style any images
-    
-    // Assemble and append
+    body.appendChild(tpl.content.cloneNode(true));
+
     block.appendChild(header);
     block.appendChild(body);
     area.appendChild(block);
-    
-    // Mark button as active
-    btn.classList.add("activeHint");
 
-    // Smooth scroll to the new content
-    setTimeout(() => {
+    if (btn) btn.classList.add("activeHint");
+
+    setTimeout(function() {
       block.scrollIntoView({ behavior: "smooth", block: "start" });
-      body.focus({ preventScroll: true });
     }, 50);
   }
 
-  // ==================== 
-  // CLOSE HINT
-  // ====================
-  // Removes the hint content with animation
   function closeHint(field, btn) {
-    const block = document.getElementById(blockId(field));
+    var block = document.getElementById(blockId(field));
     if (block) {
-      block.classList.add('closing'); // Trigger CSS animation
-      setTimeout(() => block.remove(), 300); // Remove after animation
+      block.classList.add("closing");
+      setTimeout(function() { 
+        if (block.parentNode) block.parentNode.removeChild(block); 
+      }, 300);
     }
-    btn.classList.remove("activeHint");
+    if (btn) btn.classList.remove("activeHint");
   }
 
-  // ==================== 
-  // TOGGLE HINT
-  // ====================
-  // Main toggle function - opens if closed, closes if open
   function togglePill(pill) {
-    const field = pill && pill.getAttribute("data-field");
+    var field = pill.getAttribute("data-field");
     if (!field) return;
-    const btn = pill.querySelector("a.hint");
-    if (!btn) return;
-    isOpen(field) ? closeHint(field, btn) : openHint(field, btn);
+    var btn = pill.querySelector("a.hint");
+    if (isOpen(field)) {
+      closeHint(field, btn);
+    } else {
+      openHint(field, btn);
+    }
   }
 
-  // ==================== 
-  // CLICK HANDLER
-  // ====================
-  // Bind click events to hint buttons (only once per card)
-  if (!row.dataset.hpBound) {
-    row.dataset.hpBound = "1";
-    row.addEventListener("click", function (e) {
-      const pill = e.target.closest(".pill");
-      if (!pill) return;
-      e.preventDefault();
-      e.stopPropagation();
-      togglePill(pill);
-    }, true);
-  }
+  // Click handler
+  row.addEventListener("click", function(e) {
+    var pill = e.target.closest(".pill");
+    if (!pill) return;
+    e.preventDefault();
+    e.stopPropagation();
+    togglePill(pill);
+  });
 
-  // Expose functions globally for hotkeys
-  window.__HP.togglePill = togglePill;
-  window.__HP.isOpen = isOpen;
-  window.__HP.closeHint = closeHint;
+  // Keyboard handler
+  function handleKeydown(e) {
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
 
-  // ==================== 
-  // KEYBOARD SHORTCUTS
-  // ====================
-  // H = Open next hint
-  // Shift+H = Open all hints
-  // Ctrl+H / Cmd+H = Close all hints
-  if (!window.__HP.hotkeysBound) {
-    window.__HP.hotkeysBound = true;
+    var key = e.key || String.fromCharCode(e.keyCode || e.which);
+    if (key !== "h" && key !== "H") return;
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
 
-    document.addEventListener("keydown", function (e) {
-      // Don't trigger when typing in input fields
-      const t = e.target;
-      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    e.preventDefault();
+    e.stopPropagation();
 
-      const hp = window.__HP;
-      if (!hp || !hp.row || !hp.togglePill) return;
+    var pills = row.querySelectorAll(".pill[data-field]");
+    if (pills.length === 0) return;
 
-      const key = (e.key || "").toLowerCase();
-      if (key !== "h") return;
+    var i, field, btn;
 
-      e.preventDefault();
-      e.stopImmediatePropagation();
-
-      const pills = Array.from(hp.row.querySelectorAll(".pill[data-field]"));
-
-      if (e.ctrlKey || e.metaKey) {
-        // Ctrl+H or Cmd+H: Close all hints
-        pills.forEach(p => {
-          const a = p.querySelector("a.hint");
-          const field = p.getAttribute("data-field");
-          if (a && a.classList.contains("activeHint") && field) {
-            closeHint(field, a);
-          }
-        });
-      } else if (e.shiftKey) {
-        // Shift+H: Open all hints
-        pills.forEach(p => {
-          const a = p.querySelector("a.hint");
-          if (a && !a.classList.contains("activeHint")) hp.togglePill(p);
-        });
-      } else {
-        // H: Open next unopened hint
-        const next = pills.find(p => {
-          const a = p.querySelector("a.hint");
-          return a && !a.classList.contains("activeHint");
-        });
-        if (next) hp.togglePill(next);
+    // Shift+H: close all
+    if (e.shiftKey) {
+      for (i = 0; i < pills.length; i++) {
+        field = pills[i].getAttribute("data-field");
+        btn = pills[i].querySelector("a.hint");
+        if (field && isOpen(field)) closeHint(field, btn);
       }
-    }, true);
+      return;
+    }
+
+    // H: find next closed hint and open it
+    var nextClosed = null;
+    for (i = 0; i < pills.length; i++) {
+      field = pills[i].getAttribute("data-field");
+      if (field && !isOpen(field)) {
+        nextClosed = pills[i];
+        break;
+      }
+    }
+
+    if (nextClosed) {
+      togglePill(nextClosed);
+    } else {
+      // All are open, close all
+      for (i = 0; i < pills.length; i++) {
+        field = pills[i].getAttribute("data-field");
+        btn = pills[i].querySelector("a.hint");
+        if (field && isOpen(field)) closeHint(field, btn);
+      }
+    }
   }
+
+  document.addEventListener("keydown", handleKeydown, true);
+  
+  setTimeout(function() {
+    try { 
+      document.body.focus();
+      document.body.tabIndex = -1;
+    } catch(e) {}
+  }, 100);
 })();
 </script>
