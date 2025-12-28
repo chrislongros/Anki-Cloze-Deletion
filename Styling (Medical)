@@ -1,7 +1,24 @@
-<!-- ============================================ -->
-<!-- STYLING (CSS) -->
-<!-- Copy everything below this line for Styling -->
-<!-- ============================================ -->
+/* ============================================ */
+/* CLOZE-CHATGPT - STYLING (CSS)               */
+/* ============================================ */
+/*
+  This stylesheet provides:
+  - Dark theme styling (#1e1e1e background)
+  - Responsive design (desktop + mobile)
+  - Colorful hint buttons for medical resources
+  - Smooth animations for hint expansion
+  - AnkiDroid text wrapping fixes
+  
+  Color scheme:
+  - Background: #1e1e1e (dark gray)
+  - Text: #eaeaea (light gray)
+  - Cloze answers: #4caf50 (green)
+  - Extra field: #c88f8f (muted pink)
+*/
+
+/* ============================================ */
+/* BASE RESET & SETUP */
+/* ============================================ */
 
 html, body { 
   height: auto !important;
@@ -9,20 +26,26 @@ html, body {
   padding: 0;
 }
 
+/* Prevent mobile browsers from auto-scaling text */
 body {
   -webkit-text-size-adjust: 100% !important;
   text-size-adjust: 100% !important;
 }
 
+/* Reset flexbox defaults that some Anki versions apply */
 body, .card {
   display: block !important;
   align-items: initial !important;
   justify-content: initial !important;
 }
 
+/* ============================================ */
+/* CARD CONTAINER */
+/* ============================================ */
+
 .card {
-  background: #1e1e1e;
-  color: #eaeaea;
+  background: #1e1e1e;           /* Dark background */
+  color: #eaeaea;                /* Light text */
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 28px;
   text-align: center;
@@ -30,6 +53,7 @@ body, .card {
   box-sizing: border-box;
 }
 
+/* Inner wrapper - constrains content width on large screens */
 .card-wrapper {
   max-width: 1100px;
   margin: 0 auto;
@@ -42,76 +66,81 @@ body, .card {
 /* ============================================ */
 
 .question { 
-  order: 0;
   font-size: 34px;
   font-weight: 500;
-  line-height: 1.45;
-  margin: 0 0 20px 0;
+  line-height: 1.45;             /* Comfortable line spacing */
+  margin: 0;
 }
 
 /* ============================================ */
 /* DIVIDER */
 /* ============================================ */
+/* Rainbow gradient line separating question from answer/extras */
 
 .frontBackDivider {
-  order: 10;
   width: 100%;
   height: 3px;
   margin: 26px auto 18px;
   background: linear-gradient(
     to right,
     transparent,
-    rgba(255,255,255,.55) 20%,
-    rgba(255,255,255,.90) 50%,
-    rgba(255,255,255,.55) 80%,
+    #ff6b6b 10%,      /* Red */
+    #feca57 25%,      /* Yellow */
+    #48dbfb 40%,      /* Cyan */
+    #1dd1a1 55%,      /* Green */
+    #48dbfb 70%,      /* Cyan */
+    #feca57 85%,      /* Yellow */
     transparent
   );
-  box-shadow: 0 0 16px rgba(255,255,255,.22);
   border-radius: 2px;
 }
 
 /* ============================================ */
 /* EXTRA FIELD */
 /* ============================================ */
+/* For additional notes, explanations, mnemonics, etc. */
 
 .extra {
-  order: 20;
   font-size: 24px;
-  color: #c88f8f;
-  opacity: .95;
+  color: #c88f8f;                /* Muted pink for distinction */
+  opacity: 0.95;
   margin-top: 0;
-  margin-bottom: 16px;
-  text-align: center;
 }
 
-/* Hide extra field images completely */
+/* Images within the extra field */
 .extra img {
-  display: none !important;
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 8px auto !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
 }
 
 /* ============================================ */
 /* HINT BUTTONS ROW */
 /* ============================================ */
+/* Container for resource buttons (UWorld, AMBOSS, etc.) */
 
 #hintRow {
-  order: 11;
   margin-top: 0;
   margin-bottom: 14px;
   display: flex;
-  gap: 12px;
+  gap: 12px;                     /* Space between buttons */
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap;               /* Wrap to next line on small screens */
 }
 
 /* ============================================ */
 /* HINT CONTENT AREA */
 /* ============================================ */
+/* Where expanded hint content appears */
 
 #hintContentArea {
-  order: 30;
   margin-top: 14px;
 }
 
+/* Hide template elements (they're just data containers) */
 .card-wrapper > template { 
   display: none !important; 
 }
@@ -120,17 +149,19 @@ body, .card {
 /* CLOZE STYLING */
 /* ============================================ */
 
+/* Revealed cloze answers - bright green for visibility */
 .cloze { 
   color: #4caf50; 
   font-weight: 700;
 }
 
+/* Toggle between mobile and desktop cloze display */
 .clozefield { 
-  display: none; 
+  display: none;                 /* Hidden by default (desktop) */
 }
 
 .editcloze { 
-  display: block; 
+  display: block;                /* Shown by default (desktop) */
 }
 
 /* ============================================ */
@@ -146,6 +177,7 @@ body, .card {
   box-shadow: 0 4px 12px rgba(0,0,0,.3);
 }
 
+/* Frame wrapper for images (added by JavaScript) */
 .imgFrame {
   border-radius: 10px;
   overflow: hidden;
@@ -156,6 +188,7 @@ body, .card {
 /* ============================================ */
 /* PILLS (Button Containers) */
 /* ============================================ */
+/* Each .pill wraps a hint button */
 
 .pill {
   display: inline-flex !important;
@@ -166,6 +199,7 @@ body, .card {
 /* ============================================ */
 /* HINT BUTTONS */
 /* ============================================ */
+/* Styled buttons for each resource type */
 
 a.hint {
   display: inline-flex !important;
@@ -174,7 +208,7 @@ a.hint {
   padding: 10px 22px !important;
   border-radius: 12px !important;
   line-height: 1.1 !important;
-  background: rgba(255,255,255,.06) !important;
+  background: rgba(255,255,255,.06) !important;   /* Subtle background */
   border: 1px solid rgba(255,255,255,.18) !important;
   font-size: 14px !important;
   font-weight: 650 !important;
@@ -187,17 +221,20 @@ a.hint {
   cursor: pointer;
 }
 
+/* Hover effect - slight lift */
 a.hint:hover {
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 8px 20px rgba(0,0,0,.4) !important;
   background: rgba(255,255,255,.12) !important;
 }
 
+/* Click effect - press down */
 a.hint:active {
   transform: translateY(0) scale(0.98);
   transition: all 0.1s ease;
 }
 
+/* Plus icon after button text (indicates expandable) */
 a.hint::after {
   content: " +" !important;
   margin-left: 10px !important;
@@ -205,11 +242,13 @@ a.hint::after {
   opacity: .85 !important;
 }
 
+/* Minus icon when expanded */
 a.hint.activeHint::after {
   content: " −" !important;
   opacity: 1 !important;
 }
 
+/* Active/expanded state styling */
 a.hint.activeHint {
   border-color: rgba(255,255,255,.65) !important;
   box-shadow: 0 0 0 2px rgba(255,255,255,.15) inset, 0 4px 18px rgba(0,0,0,.35) !important;
@@ -219,19 +258,20 @@ a.hint.activeHint {
 /* ============================================ */
 /* RESOURCE COLOR THEMES */
 /* ============================================ */
+/* Each resource type has its own color for easy identification */
 
-.pill.uworld a.hint { color: #5fd38d !important; }
-.pill.uworld2ck a.hint { color: #7fe9a8 !important; }
-.pill.nejm a.hint { color: #ffd27a !important; }
-.pill.amboss a.hint { color: #66aaff !important; }
-.pill.fa a.hint { color: #ff9a9a !important; }
-.pill.kaplan a.hint { color: #c29bff !important; }
-.pill.pathoma a.hint { color: #e0c3a8 !important; }
-.pill.utd a.hint { color: #66e0c2 !important; }
-.pill.nbme a.hint { color: #cfd8dc !important; }
-.pill.add a.hint { color: #d0d0d0 !important; }
+.pill.uworld a.hint { color: #5fd38d !important; }      /* Green - UWorld */
+.pill.uworld2ck a.hint { color: #7fe9a8 !important; }   /* Light green - UWorld 2CK */
+.pill.nejm a.hint { color: #ffd27a !important; }        /* Gold - NEJM */
+.pill.amboss a.hint { color: #66aaff !important; }      /* Blue - AMBOSS */
+.pill.fa a.hint { color: #ff9a9a !important; }          /* Red/Pink - First Aid */
+.pill.kaplan a.hint { color: #c29bff !important; }      /* Purple - Kaplan */
+.pill.pathoma a.hint { color: #e0c3a8 !important; }     /* Tan - Pathoma */
+.pill.utd a.hint { color: #66e0c2 !important; }         /* Teal - UpToDate */
+.pill.nbme a.hint { color: #cfd8dc !important; }        /* Gray - NBME */
+.pill.add a.hint { color: #d0d0d0 !important; }         /* Light gray - Additional */
 
-/* Active state backgrounds */
+/* Active state backgrounds - tinted version of each color */
 .pill.uworld a.hint.activeHint { background: rgba(95,211,141,.35) !important; }
 .pill.uworld2ck a.hint.activeHint { background: rgba(127,233,168,.35) !important; }
 .pill.nejm a.hint.activeHint { background: rgba(255,210,122,.30) !important; }
@@ -246,6 +286,7 @@ a.hint.activeHint {
 /* ============================================ */
 /* HINT BLOCKS (Expanded Content) */
 /* ============================================ */
+/* Container for the revealed hint content */
 
 .hintBlock {
   max-width: 980px;
@@ -253,41 +294,24 @@ a.hint.activeHint {
   animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Closing animation class (added by JavaScript) */
 .hintBlock.closing {
   animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* Slide in animation */
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
+/* Slide out animation */
 @keyframes slideOut {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.98);
-  }
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-10px) scale(0.98); }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
+/* Hint block header (resource name) */
 .hintHeader {
   font-size: 16px;
   font-weight: 600;
@@ -298,11 +322,11 @@ a.hint.activeHint {
   border-radius: 0;
   letter-spacing: 0;
   text-transform: none;
-  opacity: 0;
+  opacity: 0.85;
   color: #eaeaea;
-  animation: fadeIn 0.4s ease 0.1s forwards;
 }
 
+/* Hint block body (actual content) */
 .hintBody {
   padding: 12px 16px;
   border-radius: 12px;
@@ -311,13 +335,10 @@ a.hint.activeHint {
   text-align: left;
   font-size: 18px;
   line-height: 1.6;
-  overflow-wrap: anywhere;
-  word-break: break-word;
   color: #eaeaea;
-  opacity: 0;
-  animation: fadeIn 0.4s ease 0.15s forwards;
 }
 
+/* Reset margins/padding for common elements inside hints */
 .hintBody p,
 .hintBody div,
 .hintBody section,
@@ -333,11 +354,12 @@ a.hint.activeHint {
   box-shadow: none !important;
 }
 
-/* Add spacing only between text paragraphs */
+/* Add spacing between paragraphs */
 .hintBody p + p {
   margin-top: 12px !important;
 }
 
+/* Reset styles for non-media elements */
 .hintBody *:not(img):not(iframe):not(video) {
   background: none !important;
   border: none !important;
@@ -345,12 +367,7 @@ a.hint.activeHint {
   color: inherit !important;
 }
 
-.hintBody {
-  background: rgba(255,255,255,.04) !important;
-  border: 1px solid rgba(255,255,255,.08) !important;
-  color: #eaeaea !important;
-}
-
+/* List styling */
 .hintBody ul,
 .hintBody ol {
   padding-left: 20px !important;
@@ -362,6 +379,7 @@ a.hint.activeHint {
   padding: 0 !important;
 }
 
+/* Media elements inside hints */
 .hintBody img,
 .hintBody svg,
 .hintBody video,
@@ -378,7 +396,7 @@ a.hint.activeHint {
   padding: 0 !important;
 }
 
-/* Add spacing between consecutive images or between images and text */
+/* Spacing between consecutive media/text elements */
 .hintBody img + img,
 .hintBody img + p,
 .hintBody img + div,
@@ -416,12 +434,13 @@ a.hint.activeHint {
 /* ============================================ */
 /* MOBILE OPTIMIZATION */
 /* ============================================ */
+/* Responsive adjustments for screens <= 1100px */
 
 @media (max-width: 1100px) {
   .card { 
-    padding: 20px; 
-    font-size: 20px; 
-    text-align: left; 
+    padding: 20px;               /* Less padding on mobile */
+    font-size: 20px;             /* Smaller base font */
+    text-align: left;            /* Left-align for readability */
   }
   
   .question { 
@@ -437,6 +456,7 @@ a.hint.activeHint {
     margin: 20px 0 16px; 
   }
 
+  /* Smaller hint buttons on mobile */
   a.hint {
     padding: 9px 16px !important;
     font-size: 13px !important;
@@ -458,7 +478,7 @@ a.hint.activeHint {
     margin-bottom: 16px;
   }
 
-  /* Show non-editable cloze on mobile */
+  /* Switch to non-editable cloze on mobile */
   .clozefield { 
     display: block; 
   }
@@ -467,9 +487,39 @@ a.hint.activeHint {
     display: none; 
   }
   
-  /* Better image sizing on mobile */
   .card img,
   .extra img {
     max-width: 100% !important;
     margin: 3px auto !important;
   }
+}
+
+/* ============================================ */
+/* ANKIDROID TEXT WRAPPING FIX */
+/* ============================================ */
+/*
+  Fixes for AnkiDroid's WebView which sometimes:
+  - Hyphenates words incorrectly (breaking mid-word)
+  - Wraps words to new lines unnecessarily
+  
+  This ensures:
+  - No automatic hyphenation
+  - Words stay intact unless they're longer than the container
+  - Normal text flow with proper wrapping
+*/
+
+.card,
+.card-wrapper,
+.question,
+.question *,
+.cloze,
+.extra,
+.extra * {
+  hyphens: none !important;
+  -webkit-hyphens: none !important;
+  -moz-hyphens: none !important;
+  -ms-hyphens: none !important;
+  word-break: normal !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
