@@ -13,7 +13,8 @@ A modern, dark-themed Anki note type designed for medical students, featuring ex
 
 ## Screenshots
 
-*Add your screenshots here*
+<img width="2560" height="1318" alt="Screenshot_20251228_170108" src="https://github.com/user-attachments/assets/3abcd600-07f7-461a-b480-f12629b7a8d9" />
+<img width="2560" height="1316" alt="Screenshot_20251228_170121" src="https://github.com/user-attachments/assets/38e23885-c107-47de-a7fd-dfb6e364f3af" />
 
 ## Installation
 
