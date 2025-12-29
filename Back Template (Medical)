@@ -4,10 +4,7 @@
     {{edit:cloze:Text}}
   </div>
 
-  {{#Extra}}
   <div class="frontBackDivider"></div>
-  <div class="extra">{{edit:Extra}}</div>
-  {{/Extra}}
 
   <div id="hintRow">
     {{#UWorld_3}}<span class="pill uworld" data-field="UWorld_3"><a class="hint" href="javascript:void(0)">UWorld_3</a></span>{{/UWorld_3}}
@@ -21,6 +18,10 @@
     {{#NBME}}<span class="pill nbme" data-field="NBME"><a class="hint" href="javascript:void(0)">NBME</a></span>{{/NBME}}
     {{#Additional_Resources}}<span class="pill add" data-field="Additional_Resources"><a class="hint" href="javascript:void(0)">Additional_Resources</a></span>{{/Additional_Resources}}
   </div>
+
+  {{#Extra}}
+  <div class="extra">{{edit:Extra}}</div>
+  {{/Extra}}
 
   <div id="hintContentArea"></div>
 
@@ -42,15 +43,6 @@
   var row = document.getElementById("hintRow");
   var area = document.getElementById("hintContentArea");
   if (!row || !area) return;
-
-  // Show divider if hints exist but no Extra
-  var hasHints = row.querySelectorAll(".pill[data-field]").length > 0;
-  var hasExtra = document.querySelector(".extra");
-  if (hasHints && !hasExtra) {
-    var divider = document.createElement("div");
-    divider.className = "frontBackDivider";
-    row.parentNode.insertBefore(divider, row);
-  }
 
   // Polyfills
   if (!Element.prototype.matches) {
@@ -76,6 +68,10 @@
 
   function blockId(f) { return "hintBlock__" + f; }
   function isOpen(f) { return !!document.getElementById(blockId(f)); }
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   function openHint(field, btn) {
     if (isOpen(field)) {
@@ -122,6 +118,16 @@
     if (btn) btn.classList.remove("activeHint");
   }
 
+  function closeAllHints() {
+    var pills = row.querySelectorAll(".pill[data-field]");
+    for (var i = 0; i < pills.length; i++) {
+      var field = pills[i].getAttribute("data-field");
+      var btn = pills[i].querySelector("a.hint");
+      if (field && isOpen(field)) closeHint(field, btn);
+    }
+    setTimeout(scrollToTop, 350);
+  }
+
   function togglePill(pill) {
     var field = pill.getAttribute("data-field");
     if (!field) return;
@@ -157,22 +163,16 @@
     var pills = row.querySelectorAll(".pill[data-field]");
     if (pills.length === 0) return;
 
-    var i, field, btn;
-
-    // Shift+H: close all
+    // Shift+H: close all and scroll to top
     if (e.shiftKey) {
-      for (i = 0; i < pills.length; i++) {
-        field = pills[i].getAttribute("data-field");
-        btn = pills[i].querySelector("a.hint");
-        if (field && isOpen(field)) closeHint(field, btn);
-      }
+      closeAllHints();
       return;
     }
 
     // H: find next closed hint and open it
     var nextClosed = null;
-    for (i = 0; i < pills.length; i++) {
-      field = pills[i].getAttribute("data-field");
+    for (var i = 0; i < pills.length; i++) {
+      var field = pills[i].getAttribute("data-field");
       if (field && !isOpen(field)) {
         nextClosed = pills[i];
         break;
@@ -182,12 +182,8 @@
     if (nextClosed) {
       togglePill(nextClosed);
     } else {
-      // All are open, close all
-      for (i = 0; i < pills.length; i++) {
-        field = pills[i].getAttribute("data-field");
-        btn = pills[i].querySelector("a.hint");
-        if (field && isOpen(field)) closeHint(field, btn);
-      }
+      // All are open, close all and scroll to top
+      closeAllHints();
     }
   }
 
