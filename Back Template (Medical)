@@ -1,11 +1,53 @@
+<!-- 
+  ANKI CLOZE CARD - BACK TEMPLATE
+  ===============================
+  Features:
+  - Editable cloze text (works with "Edit Field During Review" addon)
+  - Resource hint buttons (UWorld, AMBOSS, First Aid, etc.)
+  - Expandable hint content areas
+  - Keyboard shortcuts: H = open next hint, Shift+H = close all
+  - Consistent ordering of hints (left to right)
+  - Instant scroll to top when closing all hints
+  
+  Author: Chris
+  Last Updated: December 2024
+-->
+
 <div class="card-wrapper">
 
+  <!-- 
+    QUESTION SECTION
+    ================
+    Uses {{edit:cloze:Text}} for compatibility with "Edit Field During Review" addon.
+    This allows editing the card content directly during review sessions.
+  -->
   <div class="question">
     {{edit:cloze:Text}}
   </div>
 
+  <!-- Visual separator between question and answer content -->
   <div class="frontBackDivider"></div>
 
+  <!-- 
+    HINT BUTTONS ROW
+    ================
+    Each button is wrapped in a conditional {{#FieldName}}...{{/FieldName}} block,
+    so it only appears if that field has content.
+    
+    Button classes correspond to color themes defined in CSS:
+    - uworld: green
+    - uworld2ck: light green  
+    - nejm: gold
+    - amboss: blue
+    - fa (First Aid): red/pink
+    - kaplan: purple
+    - pathoma: tan
+    - utd (UpToDate): teal
+    - nbme: gray
+    - add (Additional Resources): light gray
+    
+    The data-field attribute links each button to its corresponding template below.
+  -->
   <div id="hintRow">
     {{#UWorld_3}}<span class="pill uworld" data-field="UWorld_3"><a class="hint" href="javascript:void(0)">UWorld_3</a></span>{{/UWorld_3}}
     {{#UWorld_2CK}}<span class="pill uworld2ck" data-field="UWorld_2CK"><a class="hint" href="javascript:void(0)">UWorld_2CK</a></span>{{/UWorld_2CK}}
@@ -19,12 +61,33 @@
     {{#Additional_Resources}}<span class="pill add" data-field="Additional_Resources"><a class="hint" href="javascript:void(0)">Additional_Resources</a></span>{{/Additional_Resources}}
   </div>
 
+  <!-- 
+    EXTRA FIELD
+    ===========
+    Optional field for additional notes, images, or mnemonics.
+    Uses {{edit:Extra}} for in-review editing capability.
+    Only displays if the Extra field has content.
+  -->
   {{#Extra}}
   <div class="extra">{{edit:Extra}}</div>
   {{/Extra}}
 
+  <!-- 
+    HINT CONTENT AREA
+    =================
+    This empty div is where expanded hint content will be dynamically inserted
+    by the JavaScript below. Hints appear in the same order as the buttons.
+  -->
   <div id="hintContentArea"></div>
 
+  <!-- 
+    HINT CONTENT TEMPLATES
+    ======================
+    Hidden <template> elements store the actual content for each resource.
+    These are cloned and displayed when the corresponding button is clicked.
+    Using <template> keeps content hidden until needed and allows for
+    proper HTML content with images, tables, etc.
+  -->
   {{#UWorld_3}}<template data-field="UWorld_3">{{UWorld_3}}</template>{{/UWorld_3}}
   {{#UWorld_2CK}}<template data-field="UWorld_2CK">{{UWorld_2CK}}</template>{{/UWorld_2CK}}
   {{#NEJM}}<template data-field="NEJM">{{NEJM}}</template>{{/NEJM}}
@@ -38,16 +101,32 @@
 
 </div>
 
+<!-- 
+  JAVASCRIPT - HINT TOGGLE FUNCTIONALITY
+  ======================================
+  Handles:
+  - Click events on hint buttons
+  - Keyboard shortcuts (H and Shift+H)
+  - Opening/closing hint content with animations
+  - Maintaining consistent hint order
+  - Scrolling behavior
+-->
 <script>
 (function() {
+  // Get references to key DOM elements
   var row = document.getElementById("hintRow");
   var area = document.getElementById("hintContentArea");
   if (!row || !area) return;
 
-  // Polyfills
+  // ========================================
+  // POLYFILLS FOR OLDER BROWSERS/ANKIDROID
+  // ========================================
+  // Element.matches() polyfill
   if (!Element.prototype.matches) {
     Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
   }
+  
+  // Element.closest() polyfill - finds nearest ancestor matching selector
   if (!Element.prototype.closest) {
     Element.prototype.closest = function(s) {
       var el = this;
@@ -59,75 +138,148 @@
     };
   }
 
-  // Collect templates
+  // ========================================
+  // COLLECT HINT TEMPLATES
+  // ========================================
+  // Build a map of field names to their template elements
   var templates = {};
   var tpls = document.querySelectorAll("template[data-field]");
   for (var i = 0; i < tpls.length; i++) {
     templates[tpls[i].getAttribute("data-field")] = tpls[i];
   }
 
-  function blockId(f) { return "hintBlock__" + f; }
-  function isOpen(f) { return !!document.getElementById(blockId(f)); }
-
-  function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  // ========================================
+  // ESTABLISH BUTTON ORDER
+  // ========================================
+  // Store the order of pills as they appear in the DOM (left to right)
+  // This ensures hints always open in a consistent, predictable order
+  var pillOrder = [];
+  var allPills = row.querySelectorAll(".pill[data-field]");
+  for (var i = 0; i < allPills.length; i++) {
+    pillOrder.push(allPills[i].getAttribute("data-field"));
   }
 
+  // ========================================
+  // UTILITY FUNCTIONS
+  // ========================================
+  
+  // Generate unique ID for hint content blocks
+  function blockId(f) { 
+    return "hintBlock__" + f; 
+  }
+  
+  // Check if a hint is currently open/visible
+  function isOpen(f) { 
+    return !!document.getElementById(blockId(f)); 
+  }
+
+  // Determine where to insert a new hint block to maintain order
+  // Returns the element to insert before, or null to append at end
+  function getInsertPosition(field) {
+    var fieldIndex = pillOrder.indexOf(field);
+    var existingBlocks = area.querySelectorAll(".hintBlock");
+    
+    for (var i = 0; i < existingBlocks.length; i++) {
+      var blockField = existingBlocks[i].id.replace("hintBlock__", "");
+      var blockIndex = pillOrder.indexOf(blockField);
+      if (blockIndex > fieldIndex) {
+        return existingBlocks[i];
+      }
+    }
+    return null; // Append at end
+  }
+
+  // Scroll so element appears at the top of the viewport
+  function scrollToElementTop(el) {
+    var rect = el.getBoundingClientRect();
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    var targetY = scrollTop + rect.top;
+    window.scrollTo(0, targetY);
+  }
+
+  // ========================================
+  // HINT OPEN/CLOSE FUNCTIONS
+  // ========================================
+  
+  // Open a hint and display its content
   function openHint(field, btn) {
+    // If already open, just scroll to it
     if (isOpen(field)) {
       var existing = document.getElementById(blockId(field));
-      if (existing) existing.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (existing) scrollToElementTop(existing);
       if (btn) btn.classList.add("activeHint");
       return;
     }
 
+    // Get the template for this field
     var tpl = templates[field];
     if (!tpl) return;
 
+    // Create the hint block container
     var block = document.createElement("div");
     block.className = "hintBlock";
     block.id = blockId(field);
 
+    // Create header with resource name
     var header = document.createElement("div");
     header.className = "hintHeader";
+    // Remove +/- symbols from button text for clean header
     header.textContent = (btn ? btn.textContent : field).replace(/[+−]/g, "").trim();
 
+    // Create body and clone template content into it
     var body = document.createElement("div");
     body.className = "hintBody";
     body.appendChild(tpl.content.cloneNode(true));
 
+    // Assemble the block
     block.appendChild(header);
     block.appendChild(body);
-    area.appendChild(block);
 
+    // Insert in correct position to maintain order
+    var insertBefore = getInsertPosition(field);
+    if (insertBefore) {
+      area.insertBefore(block, insertBefore);
+    } else {
+      area.appendChild(block);
+    }
+
+    // Mark button as active
     if (btn) btn.classList.add("activeHint");
 
+    // Scroll to show the new hint (slight delay for DOM update)
     setTimeout(function() {
-      block.scrollIntoView({ behavior: "smooth", block: "start" });
+      scrollToElementTop(block);
     }, 50);
   }
 
+  // Close a hint and remove its content
   function closeHint(field, btn) {
     var block = document.getElementById(blockId(field));
     if (block) {
+      // Add closing class for CSS animation
       block.classList.add("closing");
+      // Remove from DOM after animation completes
       setTimeout(function() { 
         if (block.parentNode) block.parentNode.removeChild(block); 
       }, 300);
     }
+    // Remove active state from button
     if (btn) btn.classList.remove("activeHint");
   }
 
-  function closeAllHints() {
+  // Close all hints and scroll to top of page
+  function closeAllHintsAndScrollTop() {
     var pills = row.querySelectorAll(".pill[data-field]");
     for (var i = 0; i < pills.length; i++) {
       var field = pills[i].getAttribute("data-field");
       var btn = pills[i].querySelector("a.hint");
       if (field && isOpen(field)) closeHint(field, btn);
     }
-    setTimeout(scrollToTop, 350);
+    // Instant scroll to top
+    window.scrollTo(0, 0);
   }
 
+  // Toggle a pill between open and closed states
   function togglePill(pill) {
     var field = pill.getAttribute("data-field");
     if (!field) return;
@@ -139,7 +291,11 @@
     }
   }
 
-  // Click handler
+  // ========================================
+  // EVENT HANDLERS
+  // ========================================
+  
+  // Click handler for hint buttons
   row.addEventListener("click", function(e) {
     var pill = e.target.closest(".pill");
     if (!pill) return;
@@ -148,13 +304,17 @@
     togglePill(pill);
   });
 
-  // Keyboard handler
+  // Keyboard handler for H and Shift+H shortcuts
   function handleKeydown(e) {
+    // Ignore if user is typing in an input field
     var t = e.target;
     if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
 
+    // Only respond to H key
     var key = e.key || String.fromCharCode(e.keyCode || e.which);
     if (key !== "h" && key !== "H") return;
+    
+    // Ignore if modifier keys are pressed (except Shift)
     if (e.ctrlKey || e.altKey || e.metaKey) return;
 
     e.preventDefault();
@@ -163,32 +323,41 @@
     var pills = row.querySelectorAll(".pill[data-field]");
     if (pills.length === 0) return;
 
-    // Shift+H: close all and scroll to top
+    // Shift+H: Close all hints and scroll to top
     if (e.shiftKey) {
-      closeAllHints();
+      closeAllHintsAndScrollTop();
       return;
     }
 
-    // H: find next closed hint and open it
+    // H: Find next closed hint (in order) and open it
     var nextClosed = null;
-    for (var i = 0; i < pills.length; i++) {
-      var field = pills[i].getAttribute("data-field");
-      if (field && !isOpen(field)) {
-        nextClosed = pills[i];
-        break;
+    for (var i = 0; i < pillOrder.length; i++) {
+      var field = pillOrder[i];
+      if (!isOpen(field)) {
+        var pillEl = row.querySelector(".pill[data-field='" + field + "']");
+        if (pillEl) {
+          nextClosed = pillEl;
+          break;
+        }
       }
     }
 
     if (nextClosed) {
+      // Open the next hint
       togglePill(nextClosed);
     } else {
-      // All are open, close all and scroll to top
-      closeAllHints();
+      // All hints are open - close all and scroll to top
+      closeAllHintsAndScrollTop();
     }
   }
 
+  // Use capture phase to ensure we get the event first
   document.addEventListener("keydown", handleKeydown, true);
   
+  // ========================================
+  // INITIALIZATION
+  // ========================================
+  // Set up focus for keyboard events to work properly
   setTimeout(function() {
     try { 
       document.body.focus();
