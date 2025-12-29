@@ -1,39 +1,69 @@
+/* 
+  ANKI CLOZE CARD - STYLESHEET
+  ============================
+  A modern, dark-themed card design optimized for medical study.
+  
+  Features:
+  - Dark background with light text for reduced eye strain
+  - Responsive design for desktop and mobile (AnkiDroid)
+  - Justified text for long questions, centered for short ones
+  - Colorful hint buttons for different resources
+  - Smooth animations for hint expansion/collapse
+  - Consistent font sizes (overrides imported card styling)
+  - Editor alignment overrides for per-card customization
+  
+  Author: Chris
+  Last Updated: December 2025
+*/
+
+/* ============================================ */
+/* BASE RESET & SETUP */
+/* ============================================ */
+
 html, body { 
   height: auto !important;
   margin: 0;
   padding: 0;
 }
 
+/* Prevent text size adjustment on mobile devices */
 body {
   -webkit-text-size-adjust: 100% !important;
   text-size-adjust: 100% !important;
 }
 
+/* Reset flexbox defaults that might interfere */
 body, .card {
   display: block !important;
   align-items: initial !important;
   justify-content: initial !important;
 }
 
+/* ============================================ */
+/* MAIN CARD CONTAINER */
+/* ============================================ */
+
 .card {
-  background: #1e1e1e;
-  color: #eaeaea;
+  background: #1e1e1e;                /* Dark background */
+  color: #eaeaea;                      /* Light text */
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 28px;
   text-align: center;
   padding: 40px 60px;
   box-sizing: border-box;
-  min-height: 100vh;
+  min-height: 100vh;                   /* Full viewport height */
   display: flex;
-  align-items: center;
+  align-items: center;                 /* Vertically center content */
 }
 
+/* Inner wrapper for max-width constraint */
 .card-wrapper {
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  align-items: center;                 /* Center children horizontally */
 }
 
 /* ============================================ */
@@ -41,17 +71,64 @@ body, .card {
 /* ============================================ */
 
 .question { 
-  font-size: 36px;
+  font-size: 36px !important;
   font-weight: 500;
   line-height: 1.5;
   margin: 0;
-  text-align: left;
   width: 100%;
+  text-align: justify;                 /* Justify long text */
+  text-align-last: center;             /* Center the last line */
+}
+
+/* Short text (no line breaks or images) stays centered */
+.question:not(:has(br)):not(:has(img)) {
+  text-align: center;
+  text-align-last: center;
 }
 
 /* ============================================ */
-/* IMAGE SPACING FIX (for <br><img> pattern) */
+/* FORCE CONSISTENT FONT SIZES */
 /* ============================================ */
+/* 
+  Many imported cards have inline font-size styling that makes text
+  appear too small or inconsistent. These rules override that.
+*/
+
+.question *,
+.question span,
+.question font,
+.question div,
+.question p,
+.question b,
+.question i,
+.question u,
+.question strong,
+.question em {
+  font-size: inherit !important;
+}
+
+.cloze {
+  font-size: inherit !important;
+}
+
+.extra,
+.extra *,
+.extra span,
+.extra font,
+.extra div,
+.extra p,
+.extra b,
+.extra i,
+.extra u,
+.extra strong,
+.extra em {
+  font-size: inherit !important;
+}
+
+/* ============================================ */
+/* IMAGE SPACING FIX */
+/* ============================================ */
+/* Fix for common <br><img> pattern in imported cards */
 
 .question br {
   display: block;
@@ -67,6 +144,7 @@ body, .card {
 /* ============================================ */
 /* DIVIDER */
 /* ============================================ */
+/* Subtle gradient line separating question from answer */
 
 .frontBackDivider {
   width: 100%;
@@ -85,14 +163,16 @@ body, .card {
 /* ============================================ */
 /* EXTRA FIELD */
 /* ============================================ */
+/* Secondary content area for notes, mnemonics, images */
 
 .extra {
-  font-size: 24px;
-  color: #c88f8f;
+  font-size: 24px !important;
+  color: #c88f8f;                      /* Muted pink/salmon color */
   opacity: 0.95;
   margin-top: 0;
   margin-bottom: 20px;
-  text-align: left;
+  text-align: center;
+  width: 100%;
 }
 
 .extra img {
@@ -107,6 +187,7 @@ body, .card {
 /* ============================================ */
 /* HINT BUTTONS ROW */
 /* ============================================ */
+/* Container for resource toggle buttons */
 
 #hintRow {
   margin-top: 10px;
@@ -114,13 +195,17 @@ body, .card {
   display: flex;
   gap: 12px;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap;                     /* Wrap on smaller screens */
+  width: 100%;
 }
 
+/* Area where expanded hint content appears */
 #hintContentArea {
   margin-top: 14px;
+  width: 100%;
 }
 
+/* Hide template elements */
 .card-wrapper > template { 
   display: none !important; 
 }
@@ -128,9 +213,10 @@ body, .card {
 /* ============================================ */
 /* CLOZE STYLING */
 /* ============================================ */
+/* The revealed answer text */
 
 .cloze { 
-  color: #4caf50; 
+  color: #4caf50;                      /* Green for visibility */
   font-weight: 700;
 }
 
@@ -167,6 +253,7 @@ body, .card {
 /* ============================================ */
 /* HINT BUTTONS */
 /* ============================================ */
+/* Styled toggle buttons for each resource */
 
 a.hint {
   display: inline-flex !important;
@@ -188,17 +275,20 @@ a.hint {
   cursor: pointer;
 }
 
+/* Hover effect - lift up slightly */
 a.hint:hover {
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 8px 20px rgba(0,0,0,.4) !important;
   background: rgba(255,255,255,.12) !important;
 }
 
+/* Click/tap effect */
 a.hint:active {
   transform: translateY(0) scale(0.98);
   transition: all 0.1s ease;
 }
 
+/* Plus sign after button text (closed state) */
 a.hint::after {
   content: " +" !important;
   margin-left: 10px !important;
@@ -206,11 +296,13 @@ a.hint::after {
   opacity: .85 !important;
 }
 
+/* Minus sign when open */
 a.hint.activeHint::after {
   content: " −" !important;
   opacity: 1 !important;
 }
 
+/* Active/open state styling */
 a.hint.activeHint {
   border-color: rgba(255,255,255,.65) !important;
   box-shadow: 0 0 0 2px rgba(255,255,255,.15) inset, 0 4px 18px rgba(0,0,0,.35) !important;
@@ -220,18 +312,20 @@ a.hint.activeHint {
 /* ============================================ */
 /* RESOURCE COLOR THEMES */
 /* ============================================ */
+/* Each resource has its own distinctive color */
 
-.pill.uworld a.hint { color: #5fd38d !important; }
-.pill.uworld2ck a.hint { color: #7fe9a8 !important; }
-.pill.nejm a.hint { color: #ffd27a !important; }
-.pill.amboss a.hint { color: #66aaff !important; }
-.pill.fa a.hint { color: #ff9a9a !important; }
-.pill.kaplan a.hint { color: #c29bff !important; }
-.pill.pathoma a.hint { color: #e0c3a8 !important; }
-.pill.utd a.hint { color: #66e0c2 !important; }
-.pill.nbme a.hint { color: #cfd8dc !important; }
-.pill.add a.hint { color: #d0d0d0 !important; }
+.pill.uworld a.hint { color: #5fd38d !important; }           /* Green */
+.pill.uworld2ck a.hint { color: #7fe9a8 !important; }        /* Light green */
+.pill.nejm a.hint { color: #ffd27a !important; }             /* Gold */
+.pill.amboss a.hint { color: #66aaff !important; }           /* Blue */
+.pill.fa a.hint { color: #ff9a9a !important; }               /* Red/pink */
+.pill.kaplan a.hint { color: #c29bff !important; }           /* Purple */
+.pill.pathoma a.hint { color: #e0c3a8 !important; }          /* Tan */
+.pill.utd a.hint { color: #66e0c2 !important; }              /* Teal */
+.pill.nbme a.hint { color: #cfd8dc !important; }             /* Gray */
+.pill.add a.hint { color: #d0d0d0 !important; }              /* Light gray */
 
+/* Active state backgrounds (tinted version of each color) */
 .pill.uworld a.hint.activeHint { background: rgba(95,211,141,.35) !important; }
 .pill.uworld2ck a.hint.activeHint { background: rgba(127,233,168,.35) !important; }
 .pill.nejm a.hint.activeHint { background: rgba(255,210,122,.30) !important; }
@@ -246,6 +340,7 @@ a.hint.activeHint {
 /* ============================================ */
 /* HINT BLOCKS (Expanded Content) */
 /* ============================================ */
+/* Container for revealed resource content */
 
 .hintBlock {
   max-width: 100%;
@@ -253,20 +348,24 @@ a.hint.activeHint {
   animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Closing animation class */
 .hintBlock.closing {
   animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* Slide in from above */
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Slide out and fade */
 @keyframes slideOut {
   from { opacity: 1; transform: translateY(0) scale(1); }
   to { opacity: 0; transform: translateY(-10px) scale(0.98); }
 }
 
+/* Resource name header */
 .hintHeader {
   font-size: 16px;
   font-weight: 600;
@@ -276,6 +375,7 @@ a.hint.activeHint {
   color: #eaeaea;
 }
 
+/* Content body */
 .hintBody {
   padding: 12px 16px;
   border-radius: 12px;
@@ -287,6 +387,7 @@ a.hint.activeHint {
   color: #eaeaea;
 }
 
+/* Reset margins/padding on common elements */
 .hintBody p,
 .hintBody div,
 .hintBody span,
@@ -300,10 +401,12 @@ a.hint.activeHint {
   box-shadow: none !important;
 }
 
+/* Spacing between paragraphs */
 .hintBody p + p {
   margin-top: 12px !important;
 }
 
+/* Reset imported styling on text elements */
 .hintBody *:not(img):not(iframe):not(video) {
   background: none !important;
   border: none !important;
@@ -311,6 +414,7 @@ a.hint.activeHint {
   color: inherit !important;
 }
 
+/* List styling */
 .hintBody ul,
 .hintBody ol {
   padding-left: 20px !important;
@@ -321,6 +425,7 @@ a.hint.activeHint {
   margin: 4px 0 !important;
 }
 
+/* Media elements */
 .hintBody img,
 .hintBody video,
 .hintBody iframe {
@@ -335,6 +440,7 @@ a.hint.activeHint {
 /* ============================================ */
 /* TABLES */
 /* ============================================ */
+/* Styling for tables within hint content */
 
 .hintBody table {
   max-width: 100% !important;
@@ -361,6 +467,7 @@ a.hint.activeHint {
 /* ============================================ */
 /* MOBILE OPTIMIZATION */
 /* ============================================ */
+/* Responsive adjustments for smaller screens (AnkiDroid) */
 
 @media (max-width: 1100px) {
   .card { 
@@ -372,7 +479,7 @@ a.hint.activeHint {
   }
 
   .question { 
-    font-size: 26px;
+    font-size: 26px !important;
     margin-bottom: 16px;
   }
 
@@ -386,7 +493,7 @@ a.hint.activeHint {
   }
 
   .extra { 
-    font-size: 18px;
+    font-size: 18px !important;
     margin-bottom: 16px;
   }
 
@@ -420,6 +527,7 @@ a.hint.activeHint {
 /* ============================================ */
 /* ANKIDROID TEXT WRAPPING FIX */
 /* ============================================ */
+/* Prevents text from being cut off on Android */
 
 .card,
 .card-wrapper,
@@ -433,4 +541,53 @@ a.hint.activeHint {
   word-break: normal !important;
   white-space: normal !important;
   overflow-wrap: anywhere !important;
+}
+
+/* ============================================ */
+/* EDITOR ALIGNMENT OVERRIDES */
+/* ============================================ */
+/* 
+  These rules allow you to override text alignment on a per-card basis
+  using Anki's editor alignment buttons. The inline styles from the
+  editor will take precedence over the default styling above.
+*/
+
+.question [style*="text-align: center"],
+.question [style*="text-align:center"],
+.extra [style*="text-align: center"],
+.extra [style*="text-align:center"] {
+  text-align: center !important;
+  text-align-last: center !important;
+  display: block;
+  width: 100%;
+}
+
+.question [style*="text-align: left"],
+.question [style*="text-align:left"],
+.extra [style*="text-align: left"],
+.extra [style*="text-align:left"] {
+  text-align: left !important;
+  text-align-last: left !important;
+  display: block;
+  width: 100%;
+}
+
+.question [style*="text-align: right"],
+.question [style*="text-align:right"],
+.extra [style*="text-align: right"],
+.extra [style*="text-align:right"] {
+  text-align: right !important;
+  text-align-last: right !important;
+  display: block;
+  width: 100%;
+}
+
+.question [style*="text-align: justify"],
+.question [style*="text-align:justify"],
+.extra [style*="text-align: justify"],
+.extra [style*="text-align:justify"] {
+  text-align: justify !important;
+  text-align-last: left !important;
+  display: block;
+  width: 100%;
 }
