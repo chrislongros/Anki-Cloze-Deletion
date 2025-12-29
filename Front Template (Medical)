@@ -1,3 +1,10 @@
+<!-- 
+  ANKI CLOZE CARD - FRONT TEMPLATE
+  ================================
+  Simple front template that displays the cloze deletion question.
+  The actual cloze text is wrapped in a card-wrapper for consistent styling.
+-->
+
 <div class="card-wrapper">
   <div class="question">
     {{cloze:Text}}
