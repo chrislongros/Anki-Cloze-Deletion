@@ -1,8 +1,13 @@
-<!-- 
-  ANKI CLOZE CARD - FRONT TEMPLATE
-  ================================
-  Simple front template that displays the cloze deletion question.
-  The actual cloze text is wrapped in a card-wrapper for consistent styling.
+<!--
+ * ============================================================================
+ * ANKI CLOZE-CHATGPT - FRONT TEMPLATE
+ * ============================================================================
+ * 
+ * Simple front template displaying the cloze deletion question.
+ * 
+ * AUTHOR: Christos Longros
+ * LICENSE: BSD 3-Clause
+ * ============================================================================
 -->
 
 <div class="card-wrapper">
@@ -10,3 +15,16 @@
     {{cloze:Text}}
   </div>
 </div>
+
+<script>
+(function() {
+  var question = document.querySelector(".question");
+  if (!question) return;
+  var text = question.textContent || question.innerText || "";
+  var len = text.replace(/\s+/g, " ").trim().length;
+  question.classList.remove("text-short", "text-medium", "text-long");
+  if (len < 80) question.classList.add("text-short");
+  else if (len < 200) question.classList.add("text-medium");
+  else question.classList.add("text-long");
+})();
+</script>
