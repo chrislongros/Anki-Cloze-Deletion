@@ -1,24 +1,65 @@
 /* 
-  ANKI CLOZE CARD - STYLESHEET
-  ============================
-  A modern, dark-themed card design optimized for medical study.
-  
-  Features:
-  - Dark background with light text for reduced eye strain
-  - Responsive design for desktop and mobile (AnkiDroid)
-  - Justified text for long questions, centered for short ones
-  - Colorful hint buttons for different resources
-  - Smooth animations for hint expansion/collapse
-  - Consistent font sizes (overrides imported card styling)
-  - Editor alignment overrides for per-card customization
-  
-  Author: Chris
-  Last Updated: December 2025
-*/
+ * ============================================================================
+ * ANKI CLOZE-CHATGPT - STYLESHEET
+ * ============================================================================
+ * 
+ * A modern, dark-themed card design optimized for medical study (USMLE).
+ * 
+ * FEATURES:
+ * - Dark background with light text for reduced eye strain
+ * - Responsive design for desktop and mobile (AnkiDroid)
+ * - Expandable resource hint buttons (UWorld, AMBOSS, First Aid, etc.)
+ * - Smooth GPU-accelerated animations
+ * - Consistent font sizing (overrides imported card styling)
+ * - Proper list formatting with visible bullets
+ * - Tight image spacing for content-heavy cards
+ * - AnkiDroid text wrapping fix for long words (e.g., German terms)
+ * 
+ * KEYBOARD SHORTCUTS (handled by JavaScript):
+ * - H: Open next hint button
+ * - Shift+H: Close all hints and scroll to top
+ * 
+ * AUTHOR: Christos Longros
+ * LAST UPDATED: January 2026
+ * 
+ * ============================================================================
+ * BSD 3-Clause License
+ * 
+ * Copyright (c) 2026, Christos Longros
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * ============================================================================
+ */
 
-/* ============================================ */
-/* BASE RESET & SETUP */
-/* ============================================ */
+
+/* ============================================================================
+ * BASE RESET & SETUP
+ * ============================================================================ */
 
 html, body { 
   height: auto !important;
@@ -26,49 +67,45 @@ html, body {
   padding: 0;
 }
 
-/* Prevent text size adjustment on mobile devices */
 body {
   -webkit-text-size-adjust: 100% !important;
   text-size-adjust: 100% !important;
-}
-
-/* Reset flexbox defaults that might interfere */
-body, .card {
   display: block !important;
-  align-items: initial !important;
-  justify-content: initial !important;
 }
 
-/* ============================================ */
-/* MAIN CARD CONTAINER */
-/* ============================================ */
+
+/* ============================================================================
+ * MAIN CARD CONTAINER
+ * ============================================================================ */
 
 .card {
-  background: #1e1e1e;                /* Dark background */
-  color: #eaeaea;                      /* Light text */
+  background: #1e1e1e;
+  color: #eaeaea;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 28px;
   text-align: center;
   padding: 40px 60px;
   box-sizing: border-box;
-  min-height: 100vh;                   /* Full viewport height */
-  display: flex;
-  align-items: center;                 /* Vertically center content */
+  min-height: 100vh;
+
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
 }
 
-/* Inner wrapper for max-width constraint */
 .card-wrapper {
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;                 /* Center children horizontally */
+  align-items: center;
 }
 
-/* ============================================ */
-/* QUESTION SECTION */
-/* ============================================ */
+
+/* ============================================================================
+ * QUESTION SECTION
+ * ============================================================================ */
 
 .question { 
   font-size: 36px !important;
@@ -76,118 +113,69 @@ body, .card {
   line-height: 1.5;
   margin: 0;
   width: 100%;
-  text-align: justify;                 /* Justify long text */
-  text-align-last: center;             /* Center the last line */
-}
-
-/* Short text (no line breaks or images) stays centered */
-.question:not(:has(br)):not(:has(img)) {
   text-align: center;
-  text-align-last: center;
 }
 
-/* ============================================ */
-/* FORCE CONSISTENT FONT SIZES */
-/* ============================================ */
-/* 
-  Many imported cards have inline font-size styling that makes text
-  appear too small or inconsistent. These rules override that.
-*/
-
-.question *,
-.question span,
-.question font,
-.question div,
-.question p,
-.question b,
-.question i,
-.question u,
-.question strong,
-.question em {
-  font-size: inherit !important;
+.question * { 
+  font-size: inherit !important; 
 }
 
-.cloze {
-  font-size: inherit !important;
+
+/* ============================================================================
+ * CLOZE DELETION STYLING
+ * ============================================================================ */
+
+.cloze { 
+  color: #4caf50;
+  font-weight: 700; 
+  font-size: inherit !important; 
 }
 
-.extra,
-.extra *,
-.extra span,
-.extra font,
-.extra div,
-.extra p,
-.extra b,
-.extra i,
-.extra u,
-.extra strong,
-.extra em {
-  font-size: inherit !important;
-}
 
-/* ============================================ */
-/* IMAGE SPACING FIX */
-/* ============================================ */
-/* Fix for common <br><img> pattern in imported cards */
-
-.question br {
-  display: block;
-  margin-bottom: 20px;
-}
-
-.question img,
-.question br + img {
-  display: block !important;
-  margin: 24px auto 12px auto !important;
-}
-
-/* ============================================ */
-/* DIVIDER */
-/* ============================================ */
-/* Subtle gradient line separating question from answer */
+/* ============================================================================
+ * DIVIDER
+ * ============================================================================ */
 
 .frontBackDivider {
   width: 100%;
   height: 1px;
   margin: 26px auto 18px;
   background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255,255,255,0.3) 20%,
-    rgba(255,255,255,0.3) 80%,
+    to right, 
+    transparent, 
+    rgba(255,255,255,0.3) 20%, 
+    rgba(255,255,255,0.3) 80%, 
     transparent
   );
   border-radius: 2px;
 }
 
-/* ============================================ */
-/* EXTRA FIELD */
-/* ============================================ */
-/* Secondary content area for notes, mnemonics, images */
+
+/* ============================================================================
+ * EXTRA FIELD (always visible)
+ * ============================================================================ */
 
 .extra {
   font-size: 24px !important;
-  color: #c88f8f;                      /* Muted pink/salmon color */
+  color: #c88f8f;
   opacity: 0.95;
-  margin-top: 0;
   margin-bottom: 20px;
   text-align: center;
   width: 100%;
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.extra img {
-  max-width: 100% !important;
-  height: auto !important;
-  display: block;
-  margin: 8px auto !important;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+.extra * {
+  font-size: inherit !important;
 }
 
-/* ============================================ */
-/* HINT BUTTONS ROW */
-/* ============================================ */
-/* Container for resource toggle buttons */
+
+/* ============================================================================
+ * HINT BUTTONS ROW
+ * ============================================================================ */
 
 #hintRow {
   margin-top: 10px;
@@ -195,65 +183,33 @@ body, .card {
   display: flex;
   gap: 12px;
   justify-content: center;
-  flex-wrap: wrap;                     /* Wrap on smaller screens */
+  flex-wrap: wrap;
   width: 100%;
 }
 
-/* Area where expanded hint content appears */
-#hintContentArea {
-  margin-top: 14px;
-  width: 100%;
+#hintContentArea { 
+  margin-top: 14px; 
+  width: 100%; 
 }
 
-/* Hide template elements */
-.card-wrapper > template { 
-  display: none !important; 
+.card-wrapper > template { display: none !important; }
+.hintStore { display: none !important; }
+
+
+/* ============================================================================
+ * PILL CONTAINERS
+ * ============================================================================ */
+
+.pill { 
+  display: inline-flex !important; 
+  flex: none !important; 
+  width: fit-content !important; 
 }
 
-/* ============================================ */
-/* CLOZE STYLING */
-/* ============================================ */
-/* The revealed answer text */
 
-.cloze { 
-  color: #4caf50;                      /* Green for visibility */
-  font-weight: 700;
-}
-
-/* ============================================ */
-/* IMAGES (GLOBAL) */
-/* ============================================ */
-
-.card img {
-  max-width: 100% !important;
-  height: auto !important;
-  display: block;
-  margin: 4px auto !important;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.3);
-}
-
-.imgFrame {
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 4px auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,.3);
-}
-
-/* ============================================ */
-/* PILLS (Button Containers) */
-/* ============================================ */
-
-.pill {
-  display: inline-flex !important;
-  flex: none !important;
-  width: fit-content !important;
-}
-
-/* ============================================ */
-/* HINT BUTTONS */
-/* ============================================ */
-/* Styled toggle buttons for each resource */
+/* ============================================================================
+ * HINT BUTTONS
+ * ============================================================================ */
 
 a.hint {
   display: inline-flex !important;
@@ -271,61 +227,58 @@ a.hint {
   white-space: nowrap !important;
   user-select: none !important;
   box-shadow: 0 2px 10px rgba(0,0,0,.18) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
-/* Hover effect - lift up slightly */
-a.hint:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 20px rgba(0,0,0,.4) !important;
-  background: rgba(255,255,255,.12) !important;
+a.hint::after { 
+  content: " +" !important; 
+  margin-left: 10px !important; 
+  font-weight: 900 !important; 
+  opacity: .85 !important; 
 }
 
-/* Click/tap effect */
-a.hint:active {
-  transform: translateY(0) scale(0.98);
-  transition: all 0.1s ease;
+a.hint.activeHint::after { 
+  content: " −" !important; 
+  opacity: 1 !important; 
 }
 
-/* Plus sign after button text (closed state) */
-a.hint::after {
-  content: " +" !important;
-  margin-left: 10px !important;
-  font-weight: 900 !important;
-  opacity: .85 !important;
-}
-
-/* Minus sign when open */
-a.hint.activeHint::after {
-  content: " −" !important;
-  opacity: 1 !important;
-}
-
-/* Active/open state styling */
 a.hint.activeHint {
   border-color: rgba(255,255,255,.65) !important;
-  box-shadow: 0 0 0 2px rgba(255,255,255,.15) inset, 0 4px 18px rgba(0,0,0,.35) !important;
-  transform: scale(1.0);
+  box-shadow: 0 0 0 2px rgba(255,255,255,.15) inset, 
+              0 4px 18px rgba(0,0,0,.35) !important;
 }
 
-/* ============================================ */
-/* RESOURCE COLOR THEMES */
-/* ============================================ */
-/* Each resource has its own distinctive color */
+/* Hover effect - only on non-touch devices */
+@media (hover: hover) {
+  a.hint:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0,0,0,.4) !important;
+    background: rgba(255,255,255,.12) !important;
+  }
+  
+  a.hint:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
 
-.pill.uworld a.hint { color: #5fd38d !important; }           /* Green */
-.pill.uworld2ck a.hint { color: #7fe9a8 !important; }        /* Light green */
-.pill.nejm a.hint { color: #ffd27a !important; }             /* Gold */
-.pill.amboss a.hint { color: #66aaff !important; }           /* Blue */
-.pill.fa a.hint { color: #ff9a9a !important; }               /* Red/pink */
-.pill.kaplan a.hint { color: #c29bff !important; }           /* Purple */
-.pill.pathoma a.hint { color: #e0c3a8 !important; }          /* Tan */
-.pill.utd a.hint { color: #66e0c2 !important; }              /* Teal */
-.pill.nbme a.hint { color: #cfd8dc !important; }             /* Gray */
-.pill.add a.hint { color: #d0d0d0 !important; }              /* Light gray */
 
-/* Active state backgrounds (tinted version of each color) */
+/* ============================================================================
+ * RESOURCE COLOR THEMES
+ * ============================================================================ */
+
+.pill.uworld a.hint { color: #5fd38d !important; }
+.pill.uworld2ck a.hint { color: #7fe9a8 !important; }
+.pill.nejm a.hint { color: #ffd27a !important; }
+.pill.amboss a.hint { color: #66aaff !important; }
+.pill.fa a.hint { color: #ff9a9a !important; }
+.pill.kaplan a.hint { color: #c29bff !important; }
+.pill.pathoma a.hint { color: #e0c3a8 !important; }
+.pill.utd a.hint { color: #66e0c2 !important; }
+.pill.nbme a.hint { color: #cfd8dc !important; }
+.pill.notes a.hint { color: #80deea !important; }
+.pill.add a.hint { color: #d0d0d0 !important; }
+
 .pill.uworld a.hint.activeHint { background: rgba(95,211,141,.35) !important; }
 .pill.uworld2ck a.hint.activeHint { background: rgba(127,233,168,.35) !important; }
 .pill.nejm a.hint.activeHint { background: rgba(255,210,122,.30) !important; }
@@ -335,199 +288,168 @@ a.hint.activeHint {
 .pill.pathoma a.hint.activeHint { background: rgba(224,195,168,.35) !important; }
 .pill.utd a.hint.activeHint { background: rgba(102,224,194,.35) !important; }
 .pill.nbme a.hint.activeHint { background: rgba(207,216,220,.35) !important; }
+.pill.notes a.hint.activeHint { background: rgba(128,222,234,.35) !important; }
 .pill.add a.hint.activeHint { background: rgba(255,255,255,.28) !important; }
 
-/* ============================================ */
-/* HINT BLOCKS (Expanded Content) */
-/* ============================================ */
-/* Container for revealed resource content */
 
-.hintBlock {
-  max-width: 100%;
-  margin: 0 auto 20px;
-  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+/* ============================================================================
+ * HINT BLOCKS (Expanded Content)
+ * ============================================================================ */
+
+.hintBlock { 
+  max-width: 100%; 
+  margin: 0 auto 20px; 
 }
 
-/* Closing animation class */
-.hintBlock.closing {
-  animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-/* Slide in from above */
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Slide out and fade */
-@keyframes slideOut {
-  from { opacity: 1; transform: translateY(0) scale(1); }
-  to { opacity: 0; transform: translateY(-10px) scale(0.98); }
-}
-
-/* Resource name header */
-.hintHeader {
-  font-size: 16px;
-  font-weight: 600;
-  text-align: left;
-  margin-bottom: 10px;
-  opacity: 0.85;
+.hintHeader { 
+  font-size: 16px; 
+  font-weight: 600; 
+  text-align: left; 
+  margin-bottom: 10px; 
+  opacity: .85; 
   color: #eaeaea;
 }
 
-/* Content body */
+/* Outer container - no animation to prevent layout shifts */
 .hintBody {
-  padding: 12px 16px;
   border-radius: 12px;
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.08);
+}
+
+/* Inner content - GPU-accelerated animation */
+.hintBodyInner {
+  padding: 12px 16px;
   text-align: left;
   font-size: 18px;
   line-height: 1.6;
   color: #eaeaea;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  will-change: opacity, transform;
 }
 
-/* Reset margins/padding on common elements */
-.hintBody p,
-.hintBody div,
-.hintBody span,
-.hintBody ul,
-.hintBody ol,
-.hintBody li {
-  margin: 0 !important;
-  padding: 0 !important;
+.hintBlock.animateIn .hintBodyInner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hintBlock.closing .hintBodyInner {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.hintBodyInner * {
   background: none !important;
-  border: none !important;
   box-shadow: none !important;
 }
 
-/* Spacing between paragraphs */
-.hintBody p + p {
+
+/* ============================================================================
+ * LIST STYLING
+ * ============================================================================ */
+
+.question ul,
+.question ol,
+.extra ul,
+.extra ol,
+.hintBodyInner ul,
+.hintBodyInner ol {
+  text-align: left !important;
+  padding-left: 2em !important;
+  margin: 12px 0 !important;
+  list-style-position: inside !important;
+  display: block !important;
+}
+
+.question li,
+.extra li,
+.hintBodyInner li {
+  text-align: left !important;
+  padding-left: 0 !important;
+  margin: 8px 0 !important;
+  display: list-item !important;
+}
+
+
+/* ============================================================================
+ * IMAGES
+ * ============================================================================ */
+
+.question img,
+.extra img,
+.hintBodyInner img,
+.question br + img {
+  display: block !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 8px auto !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+
+/* Consecutive images - minimal gap */
+.hintBodyInner img + img,
+.extra img + img,
+.question img + img {
+  margin-top: 4px !important;
+}
+
+.question br + img {
   margin-top: 12px !important;
 }
 
-/* Reset imported styling on text elements */
-.hintBody *:not(img):not(iframe):not(video) {
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  color: inherit !important;
-}
 
-/* List styling */
-.hintBody ul,
-.hintBody ol {
-  padding-left: 20px !important;
-  margin: 8px 0 !important;
-}
+/* ============================================================================
+ * TABLES
+ * ============================================================================ */
 
-.hintBody li {
-  margin: 4px 0 !important;
-}
-
-/* Media elements */
-.hintBody img,
-.hintBody video,
-.hintBody iframe {
+.hintBodyInner table {
   max-width: 100% !important;
-  height: auto !important;
-  display: block !important;
-  margin: 0 auto !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,.3) !important;
-}
-
-/* ============================================ */
-/* TABLES */
-/* ============================================ */
-/* Styling for tables within hint content */
-
-.hintBody table {
-  max-width: 100% !important;
-  width: 100% !important;
+  width: auto !important;
   border-collapse: collapse;
-  margin: 12px 0;
+  margin: 12px auto;
   background: rgba(255,255,255,.02);
   border-radius: 8px;
   overflow: hidden;
 }
 
-.hintBody td,
-.hintBody th {
+.hintBodyInner td,
+.hintBodyInner th {
   padding: 8px 12px;
   vertical-align: top;
   border: 1px solid rgba(255,255,255,.1);
+  text-align: left;
 }
 
-.hintBody th {
+.hintBodyInner th {
   background: rgba(255,255,255,.05);
   font-weight: 600;
 }
 
-/* ============================================ */
-/* MOBILE OPTIMIZATION */
-/* ============================================ */
-/* Responsive adjustments for smaller screens (AnkiDroid) */
 
-@media (max-width: 1100px) {
-  .card { 
-    padding: 20px; 
-    font-size: 20px; 
-    text-align: left;
-    min-height: auto;
-    display: block;
-  }
+/* ============================================================================
+ * LINKS
+ * ============================================================================ */
 
-  .question { 
-    font-size: 26px !important;
-    margin-bottom: 16px;
-  }
-
-  .question br {
-    margin-bottom: 16px;
-  }
-
-  .question img,
-  .question br + img {
-    margin: 20px auto 10px auto !important;
-  }
-
-  .extra { 
-    font-size: 18px !important;
-    margin-bottom: 16px;
-  }
-
-  .frontBackDivider { 
-    margin: 20px 0 16px; 
-  }
-
-  a.hint {
-    padding: 9px 16px !important;
-    font-size: 13px !important;
-    border-radius: 10px !important;
-  }
-
-  #hintRow { 
-    margin-top: 8px;
-    margin-bottom: 12px;
-    gap: 8px;
-  }
-
-  .hintBody {
-    font-size: 16px;
-    padding: 10px 12px;
-    line-height: 1.5;
-  }
-
-  .hintBlock {
-    margin-bottom: 16px;
-  }
+.question a,
+.extra a,
+.hintBodyInner a {
+  color: #66aaff;
+  text-decoration: underline;
+  text-decoration-color: rgba(102, 170, 255, 0.4);
+  text-underline-offset: 2px;
 }
 
-/* ============================================ */
-/* ANKIDROID TEXT WRAPPING FIX */
-/* ============================================ */
-/* Prevents text from being cut off on Android */
+
+/* ============================================================================
+ * ANKIDROID TEXT WRAPPING FIX
+ * ============================================================================ */
 
 .card,
 .card-wrapper,
@@ -535,7 +457,9 @@ a.hint.activeHint {
 .question *,
 .cloze,
 .extra,
-.extra * {
+.extra *,
+.hintBodyInner,
+.hintBodyInner * {
   hyphens: none !important;
   -webkit-hyphens: none !important;
   word-break: normal !important;
@@ -543,21 +467,100 @@ a.hint.activeHint {
   overflow-wrap: anywhere !important;
 }
 
-/* ============================================ */
-/* EDITOR ALIGNMENT OVERRIDES */
-/* ============================================ */
-/* 
-  These rules allow you to override text alignment on a per-card basis
-  using Anki's editor alignment buttons. The inline styles from the
-  editor will take precedence over the default styling above.
-*/
+
+/* ============================================================================
+ * ADAPTIVE FONT SIZE (applied by JavaScript)
+ * ============================================================================
+ * Short text gets larger fonts for better readability.
+ * Thresholds: short (<80 chars), medium (80-200), long (>200)
+ */
+
+.question.text-short { font-size: 42px !important; }
+.question.text-medium { font-size: 36px !important; }
+.question.text-long { font-size: 32px !important; }
+
+
+/* ============================================================================
+ * MOBILE OPTIMIZATION
+ * ============================================================================ */
+
+@media (max-width: 1100px) {
+  .card { 
+    padding: 20px; 
+    font-size: 20px; 
+    min-height: auto; 
+  }
+  
+  .question { 
+    font-size: 22px !important; 
+    margin-bottom: 16px; 
+  }
+  
+  /* Adaptive sizes for mobile */
+  .question.text-short { font-size: 32px !important; }
+  .question.text-medium { font-size: 26px !important; }
+  .question.text-long { font-size: 22px !important; }
+  
+  .extra { 
+    font-size: 16px !important; 
+    margin-bottom: 16px; 
+  }
+  
+  .frontBackDivider {
+    margin: 20px 0 16px;
+  }
+  
+  a.hint { 
+    padding: 9px 16px !important; 
+    font-size: 13px !important; 
+    border-radius: 10px !important; 
+  }
+  
+  #hintRow { 
+    gap: 8px; 
+  }
+  
+  .hintBodyInner { 
+    font-size: 16px; 
+    padding: 10px 12px; 
+    line-height: 1.5; 
+  }
+  
+  .question ul,
+  .question ol,
+  .hintBodyInner ul,
+  .hintBodyInner ol {
+    padding-left: 1.5em !important;
+  }
+  
+  .question li,
+  .hintBodyInner li {
+    margin: 6px 0 !important;
+  }
+
+  .question img,
+  .extra img,
+  .hintBodyInner img {
+    margin: 4px auto !important;
+  }
+
+  .hintBodyInner img + img,
+  .extra img + img,
+  .question img + img {
+    margin-top: 2px !important;
+  }
+}
+
+
+/* ============================================================================
+ * EDITOR ALIGNMENT OVERRIDES
+ * ============================================================================ */
 
 .question [style*="text-align: center"],
 .question [style*="text-align:center"],
 .extra [style*="text-align: center"],
 .extra [style*="text-align:center"] {
   text-align: center !important;
-  text-align-last: center !important;
   display: block;
   width: 100%;
 }
@@ -567,7 +570,6 @@ a.hint.activeHint {
 .extra [style*="text-align: left"],
 .extra [style*="text-align:left"] {
   text-align: left !important;
-  text-align-last: left !important;
   display: block;
   width: 100%;
 }
@@ -577,17 +579,6 @@ a.hint.activeHint {
 .extra [style*="text-align: right"],
 .extra [style*="text-align:right"] {
   text-align: right !important;
-  text-align-last: right !important;
-  display: block;
-  width: 100%;
-}
-
-.question [style*="text-align: justify"],
-.question [style*="text-align:justify"],
-.extra [style*="text-align: justify"],
-.extra [style*="text-align:justify"] {
-  text-align: justify !important;
-  text-align-last: left !important;
   display: block;
   width: 100%;
 }
