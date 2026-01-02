@@ -114,10 +114,55 @@ body {
   margin: 0;
   width: 100%;
   text-align: center;
+  text-align-last: center !important;
+  word-spacing: normal !important;
+  text-justify: none !important;
 }
 
 .question * { 
-  font-size: inherit !important; 
+  font-size: inherit !important;
+  word-spacing: normal !important;
+  text-justify: none !important;
+}
+
+/* Override any inline justify styling from imported cards */
+.question [style*="justify"],
+.question [style*="JUSTIFY"],
+.question [style*="Justify"],
+.extra [style*="justify"],
+.extra [style*="JUSTIFY"],
+.extra [style*="Justify"] {
+  text-align: left !important;
+  word-spacing: normal !important;
+  text-justify: none !important;
+}
+
+/* Force all text elements to not justify */
+.question p,
+.question div,
+.question span,
+.question font,
+.question b,
+.question i,
+.question strong,
+.question em,
+.question u {
+  text-align: inherit !important;
+  word-spacing: normal !important;
+  text-justify: none !important;
+  letter-spacing: normal !important;
+  white-space: normal !important;
+}
+
+/* Prevent inline-block from causing word gaps */
+.question span,
+.question font,
+.question b,
+.question i,
+.question strong,
+.question em,
+.question u {
+  display: inline !important;
 }
 
 
@@ -161,6 +206,9 @@ body {
   opacity: 0.95;
   margin-bottom: 20px;
   text-align: center;
+  text-align-last: center !important;
+  word-spacing: normal !important;
+  text-justify: none !important;
   width: 100%;
   line-height: 1.7;
   display: flex;
@@ -170,6 +218,8 @@ body {
 
 .extra * {
   font-size: inherit !important;
+  word-spacing: normal !important;
+  text-justify: none !important;
 }
 
 
@@ -267,28 +317,32 @@ a.hint.activeHint {
  * RESOURCE COLOR THEMES
  * ============================================================================ */
 
+.pill.notes a.hint { color: #80deea !important; }
 .pill.uworld a.hint { color: #5fd38d !important; }
 .pill.uworld2ck a.hint { color: #7fe9a8 !important; }
-.pill.nejm a.hint { color: #ffd27a !important; }
 .pill.amboss a.hint { color: #66aaff !important; }
-.pill.fa a.hint { color: #ff9a9a !important; }
+.pill.missed a.hint { color: #ff8a65 !important; }
 .pill.kaplan a.hint { color: #c29bff !important; }
 .pill.pathoma a.hint { color: #e0c3a8 !important; }
-.pill.utd a.hint { color: #66e0c2 !important; }
+.pill.bnb a.hint { color: #ffcc80 !important; }
+.pill.fa a.hint { color: #ff9a9a !important; }
 .pill.nbme a.hint { color: #cfd8dc !important; }
-.pill.notes a.hint { color: #80deea !important; }
+.pill.nejm a.hint { color: #ffd27a !important; }
+.pill.utd a.hint { color: #66e0c2 !important; }
 .pill.add a.hint { color: #d0d0d0 !important; }
 
+.pill.notes a.hint.activeHint { background: rgba(128,222,234,.35) !important; }
 .pill.uworld a.hint.activeHint { background: rgba(95,211,141,.35) !important; }
 .pill.uworld2ck a.hint.activeHint { background: rgba(127,233,168,.35) !important; }
-.pill.nejm a.hint.activeHint { background: rgba(255,210,122,.30) !important; }
 .pill.amboss a.hint.activeHint { background: rgba(102,170,255,.35) !important; }
-.pill.fa a.hint.activeHint { background: rgba(255,154,154,.35) !important; }
+.pill.missed a.hint.activeHint { background: rgba(255,138,101,.35) !important; }
 .pill.kaplan a.hint.activeHint { background: rgba(194,155,255,.35) !important; }
 .pill.pathoma a.hint.activeHint { background: rgba(224,195,168,.35) !important; }
-.pill.utd a.hint.activeHint { background: rgba(102,224,194,.35) !important; }
+.pill.bnb a.hint.activeHint { background: rgba(255,204,128,.35) !important; }
+.pill.fa a.hint.activeHint { background: rgba(255,154,154,.35) !important; }
 .pill.nbme a.hint.activeHint { background: rgba(207,216,220,.35) !important; }
-.pill.notes a.hint.activeHint { background: rgba(128,222,234,.35) !important; }
+.pill.nejm a.hint.activeHint { background: rgba(255,210,122,.30) !important; }
+.pill.utd a.hint.activeHint { background: rgba(102,224,194,.35) !important; }
 .pill.add a.hint.activeHint { background: rgba(255,255,255,.28) !important; }
 
 
@@ -352,7 +406,9 @@ a.hint.activeHint {
 
 /* ============================================================================
  * LIST STYLING
- * ============================================================================ */
+ * ============================================================================
+ * Lists should be left-aligned with bullets visible.
+ */
 
 .question ul,
 .question ol,
@@ -361,17 +417,18 @@ a.hint.activeHint {
 .hintBodyInner ul,
 .hintBodyInner ol {
   text-align: left !important;
-  padding-left: 2em !important;
-  margin: 12px 0 !important;
-  list-style-position: inside !important;
+  padding-left: 1.5em !important;
+  margin: 12px auto !important;
+  list-style-position: outside !important;
   display: block !important;
+  max-width: 90% !important;
 }
 
 .question li,
 .extra li,
 .hintBodyInner li {
   text-align: left !important;
-  padding-left: 0 !important;
+  padding-left: 0.5em !important;
   margin: 8px 0 !important;
   display: list-item !important;
 }
@@ -469,18 +526,6 @@ a.hint.activeHint {
 
 
 /* ============================================================================
- * ADAPTIVE FONT SIZE (applied by JavaScript)
- * ============================================================================
- * Short text gets larger fonts for better readability.
- * Thresholds: short (<80 chars), medium (80-200), long (>200)
- */
-
-.question.text-short { font-size: 42px !important; }
-.question.text-medium { font-size: 36px !important; }
-.question.text-long { font-size: 32px !important; }
-
-
-/* ============================================================================
  * MOBILE OPTIMIZATION
  * ============================================================================ */
 
@@ -496,7 +541,7 @@ a.hint.activeHint {
     margin-bottom: 16px; 
   }
   
-  /* Adaptive sizes for mobile */
+  /* Adaptive sizes for mobile only */
   .question.text-short { font-size: 32px !important; }
   .question.text-medium { font-size: 26px !important; }
   .question.text-long { font-size: 22px !important; }
@@ -531,11 +576,18 @@ a.hint.activeHint {
   .hintBodyInner ul,
   .hintBodyInner ol {
     padding-left: 1.5em !important;
+    list-style-position: outside !important;
+    text-align: left !important;
+    max-width: 95% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
   
   .question li,
   .hintBodyInner li {
     margin: 6px 0 !important;
+    text-align: left !important;
+    padding-left: 0.3em !important;
   }
 
   .question img,
@@ -561,6 +613,7 @@ a.hint.activeHint {
 .extra [style*="text-align: center"],
 .extra [style*="text-align:center"] {
   text-align: center !important;
+  word-spacing: normal !important;
   display: block;
   width: 100%;
 }
@@ -570,6 +623,7 @@ a.hint.activeHint {
 .extra [style*="text-align: left"],
 .extra [style*="text-align:left"] {
   text-align: left !important;
+  word-spacing: normal !important;
   display: block;
   width: 100%;
 }
@@ -579,6 +633,21 @@ a.hint.activeHint {
 .extra [style*="text-align: right"],
 .extra [style*="text-align:right"] {
   text-align: right !important;
+  word-spacing: normal !important;
+  display: block;
+  width: 100%;
+}
+
+/* Force override justify alignment from imported cards */
+.question [style*="text-align: justify"],
+.question [style*="text-align:justify"],
+.extra [style*="text-align: justify"],
+.extra [style*="text-align:justify"],
+.hintBodyInner [style*="text-align: justify"],
+.hintBodyInner [style*="text-align:justify"] {
+  text-align: left !important;
+  word-spacing: normal !important;
+  text-justify: none !important;
   display: block;
   width: 100%;
 }
