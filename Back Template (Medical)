@@ -15,8 +15,8 @@
  * FIELDS:
  * - Text: Main cloze content
  * - Extra: Always-visible notes (optional)
- * - UWorld_3, UWorld_2CK, NEJM, AMBOSS, First_Aid, Kaplan, 
- *   Pathoma, UpToDate, NBME, Notes, Additional_Resources
+ * - Notes, UWorld_3, UWorld_2CK, AMBOSS, Missed_Questions, Kaplan,
+ *   Pathoma, Boards_and_Beyond, First_Aid, NBME, NEJM, UpToDate, Additional_Resources
  * 
  * AUTHOR: Christos Longros
  * LICENSE: BSD 3-Clause
@@ -32,19 +32,21 @@
 
   <div class="frontBackDivider"></div>
 
-  <!-- HINT BUTTONS: Only appear if field has content -->
+  <!-- HINT BUTTONS: Only appear if field has content (ordered by field position) -->
   <div id="hintRow">
-    {{#UWorld_3}}<span class="pill uworld" data-field="UWorld_3"><a class="hint" href="javascript:void(0)">UWorld_3</a></span>{{/UWorld_3}}
-    {{#UWorld_2CK}}<span class="pill uworld2ck" data-field="UWorld_2CK"><a class="hint" href="javascript:void(0)">UWorld_2CK</a></span>{{/UWorld_2CK}}
-    {{#NEJM}}<span class="pill nejm" data-field="NEJM"><a class="hint" href="javascript:void(0)">NEJM</a></span>{{/NEJM}}
+    {{#Notes}}<span class="pill notes" data-field="Notes"><a class="hint" href="javascript:void(0)">Notes</a></span>{{/Notes}}
+    {{#UWorld_3}}<span class="pill uworld" data-field="UWorld_3"><a class="hint" href="javascript:void(0)">UWorld 3</a></span>{{/UWorld_3}}
+    {{#UWorld_2CK}}<span class="pill uworld2ck" data-field="UWorld_2CK"><a class="hint" href="javascript:void(0)">UWorld 2CK</a></span>{{/UWorld_2CK}}
     {{#AMBOSS}}<span class="pill amboss" data-field="AMBOSS"><a class="hint" href="javascript:void(0)">AMBOSS</a></span>{{/AMBOSS}}
-    {{#First_Aid}}<span class="pill fa" data-field="First_Aid"><a class="hint" href="javascript:void(0)">First_Aid</a></span>{{/First_Aid}}
+    {{#Missed_Questions}}<span class="pill missed" data-field="Missed_Questions"><a class="hint" href="javascript:void(0)">Missed Questions</a></span>{{/Missed_Questions}}
     {{#Kaplan}}<span class="pill kaplan" data-field="Kaplan"><a class="hint" href="javascript:void(0)">Kaplan</a></span>{{/Kaplan}}
     {{#Pathoma}}<span class="pill pathoma" data-field="Pathoma"><a class="hint" href="javascript:void(0)">Pathoma</a></span>{{/Pathoma}}
-    {{#UpToDate}}<span class="pill utd" data-field="UpToDate"><a class="hint" href="javascript:void(0)">UpToDate</a></span>{{/UpToDate}}
+    {{#Boards_and_Beyond}}<span class="pill bnb" data-field="Boards_and_Beyond"><a class="hint" href="javascript:void(0)">Boards and Beyond</a></span>{{/Boards_and_Beyond}}
+    {{#First_Aid}}<span class="pill fa" data-field="First_Aid"><a class="hint" href="javascript:void(0)">First Aid</a></span>{{/First_Aid}}
     {{#NBME}}<span class="pill nbme" data-field="NBME"><a class="hint" href="javascript:void(0)">NBME</a></span>{{/NBME}}
-    {{#Notes}}<span class="pill notes" data-field="Notes"><a class="hint" href="javascript:void(0)">Notes</a></span>{{/Notes}}
-    {{#Additional_Resources}}<span class="pill add" data-field="Additional_Resources"><a class="hint" href="javascript:void(0)">Additional_Resources</a></span>{{/Additional_Resources}}
+    {{#NEJM}}<span class="pill nejm" data-field="NEJM"><a class="hint" href="javascript:void(0)">NEJM</a></span>{{/NEJM}}
+    {{#UpToDate}}<span class="pill utd" data-field="UpToDate"><a class="hint" href="javascript:void(0)">UpToDate</a></span>{{/UpToDate}}
+    {{#Additional_Resources}}<span class="pill add" data-field="Additional_Resources"><a class="hint" href="javascript:void(0)">Additional Resources</a></span>{{/Additional_Resources}}
   </div>
 
   <!-- EXTRA: Always visible when populated -->
@@ -56,16 +58,18 @@
   <div id="hintContentArea"></div>
 
   <!-- HIDDEN CONTENT STORES: Using divs instead of <template> for AnkiDroid compatibility -->
+  {{#Notes}}<div class="hintStore" data-field="Notes">{{Notes}}</div>{{/Notes}}
   {{#UWorld_3}}<div class="hintStore" data-field="UWorld_3">{{UWorld_3}}</div>{{/UWorld_3}}
   {{#UWorld_2CK}}<div class="hintStore" data-field="UWorld_2CK">{{UWorld_2CK}}</div>{{/UWorld_2CK}}
-  {{#NEJM}}<div class="hintStore" data-field="NEJM">{{NEJM}}</div>{{/NEJM}}
   {{#AMBOSS}}<div class="hintStore" data-field="AMBOSS">{{AMBOSS}}</div>{{/AMBOSS}}
-  {{#First_Aid}}<div class="hintStore" data-field="First_Aid">{{First_Aid}}</div>{{/First_Aid}}
+  {{#Missed_Questions}}<div class="hintStore" data-field="Missed_Questions">{{Missed_Questions}}</div>{{/Missed_Questions}}
   {{#Kaplan}}<div class="hintStore" data-field="Kaplan">{{Kaplan}}</div>{{/Kaplan}}
   {{#Pathoma}}<div class="hintStore" data-field="Pathoma">{{Pathoma}}</div>{{/Pathoma}}
-  {{#UpToDate}}<div class="hintStore" data-field="UpToDate">{{UpToDate}}</div>{{/UpToDate}}
+  {{#Boards_and_Beyond}}<div class="hintStore" data-field="Boards_and_Beyond">{{Boards_and_Beyond}}</div>{{/Boards_and_Beyond}}
+  {{#First_Aid}}<div class="hintStore" data-field="First_Aid">{{First_Aid}}</div>{{/First_Aid}}
   {{#NBME}}<div class="hintStore" data-field="NBME">{{NBME}}</div>{{/NBME}}
-  {{#Notes}}<div class="hintStore" data-field="Notes">{{Notes}}</div>{{/Notes}}
+  {{#NEJM}}<div class="hintStore" data-field="NEJM">{{NEJM}}</div>{{/NEJM}}
+  {{#UpToDate}}<div class="hintStore" data-field="UpToDate">{{UpToDate}}</div>{{/UpToDate}}
   {{#Additional_Resources}}<div class="hintStore" data-field="Additional_Resources">{{Additional_Resources}}</div>{{/Additional_Resources}}
 
 </div>
