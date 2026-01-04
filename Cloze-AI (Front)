@@ -1,0 +1,61 @@
+<!--
+================================================================================
+CLOZE-AI — FRONT TEMPLATE
+================================================================================
+
+PURPOSE:
+  Displays the cloze deletion question (front side of the card).
+  The answer is hidden and replaced with [...] or a hint.
+
+FEATURES:
+  - Adaptive font size based on text length (mobile only)
+  - Clean, centered layout
+  - Compatible with AnkiDroid
+
+USAGE:
+  Copy this entire file content into Anki's "Front Template" field.
+
+AUTHOR: Christos Longros
+LICENSE: BSD 3-Clause
+================================================================================
+-->
+
+<div class="card-wrapper">
+  <div class="question">
+    {{cloze:Text}}
+  </div>
+</div>
+
+<!--
+================================================================================
+ADAPTIVE FONT SIZE SCRIPT
+================================================================================
+Measures the text length and applies a CSS class for font sizing.
+Only affects mobile devices (handled via CSS media queries).
+
+Thresholds:
+  - Short: < 80 characters  → larger font
+  - Medium: 80-200 characters → medium font  
+  - Long: > 200 characters → smaller font
+
+You can adjust these thresholds by changing the numbers below.
+================================================================================
+-->
+<script>
+(function() {
+  var question = document.querySelector(".question");
+  if (!question) return;
+  
+  // Get plain text content (strips HTML tags)
+  var text = question.textContent || question.innerText || "";
+  var len = text.replace(/\s+/g, " ").trim().length;
+  
+  // Remove any existing size classes
+  question.classList.remove("text-short", "text-medium", "text-long");
+  
+  // Apply class based on length
+  if (len < 80) question.classList.add("text-short");
+  else if (len < 200) question.classList.add("text-medium");
+  else question.classList.add("text-long");
+})();
+</script>
