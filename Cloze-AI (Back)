@@ -1,38 +1,73 @@
 <!--
- * ============================================================================
- * ANKI CLOZE-CHATGPT - BACK TEMPLATE
- * ============================================================================
- * 
- * Back template for medical flashcards with expandable resource hints.
- * 
- * FEATURES:
- * - Editable cloze text (works with "Edit Field During Review" addon)
- * - Resource hint buttons (UWorld, AMBOSS, First Aid, etc.)
- * - GPU-accelerated animations for smooth performance
- * - Keyboard shortcuts: H = open next hint, Shift+H = close all
- * - Prevents listener stacking across card reviews
- * 
- * FIELDS:
- * - Text: Main cloze content
- * - Extra: Always-visible notes (optional)
- * - Notes, UWorld_3, UWorld_2CK, AMBOSS, Missed_Questions, Kaplan,
- *   Pathoma, Boards_and_Beyond, First_Aid, NBME, NEJM, UpToDate, Additional_Resources
- * 
- * AUTHOR: Christos Longros
- * LICENSE: BSD 3-Clause
- * ============================================================================
+================================================================================
+CLOZE-AI — BACK TEMPLATE
+================================================================================
+
+PURPOSE:
+  Displays the answer side with expandable resource hint buttons.
+  Perfect for medical study with multiple reference sources.
+
+FEATURES:
+  - Expandable hint buttons (UWorld, AMBOSS, First Aid, etc.)
+  - Keyboard shortcuts: H = open next, Shift+H = close all
+  - GPU-accelerated animations for smooth performance
+  - Compatible with "Edit Field During Review" addon
+  - Prevents listener stacking across card reviews
+
+FIELDS (in order):
+  1. Text              - Main cloze content (required)
+  2. Extra             - Always-visible notes
+  3. Notes             - Personal notes (hint button)
+  4. UWorld_3          - UWorld Step 1/3
+  5. UWorld_2CK        - UWorld Step 2 CK
+  6. AMBOSS            - AMBOSS content
+  7. Missed_Questions  - Questions you missed
+  8. Kaplan            - Kaplan content
+  9. Pathoma           - Pathoma content
+  10. Boards_and_Beyond - Boards and Beyond
+  11. First_Aid        - First Aid content
+  12. NBME             - NBME content
+  13. NEJM             - NEJM content
+  14. UpToDate         - UpToDate content
+  15. Additional_Resources - Other resources
+
+USAGE:
+  Copy this entire file content into Anki's "Back Template" field.
+
+AUTHOR: Christos Longros
+LICENSE: BSD 3-Clause
+================================================================================
 -->
 
 <div class="card-wrapper">
 
-  <!-- QUESTION: Uses edit:cloze for "Edit Field During Review" addon -->
+  <!--
+  ============================================================================
+  QUESTION SECTION
+  ============================================================================
+  Uses {{edit:cloze:Text}} for compatibility with "Edit Field During Review"
+  addon. If you don't use that addon, you can change to {{cloze:Text}}.
+  -->
   <div class="question">
     {{edit:cloze:Text}}
   </div>
 
   <div class="frontBackDivider"></div>
 
-  <!-- HINT BUTTONS: Only appear if field has content (ordered by field position) -->
+  <!--
+  ============================================================================
+  HINT BUTTONS ROW
+  ============================================================================
+  Buttons only appear if the corresponding field has content.
+  The order matches the field order in your note type.
+  
+  To add a new resource:
+  1. Add the field in Anki (Tools → Manage Note Types → Fields)
+  2. Add a button line here with the field name
+  3. Add a hintStore div below
+  4. Add color styles in the CSS
+  ============================================================================
+  -->
   <div id="hintRow">
     {{#Notes}}<span class="pill notes" data-field="Notes"><a class="hint" href="javascript:void(0)">Notes</a></span>{{/Notes}}
     {{#UWorld_3}}<span class="pill uworld" data-field="UWorld_3"><a class="hint" href="javascript:void(0)">UWorld 3</a></span>{{/UWorld_3}}
@@ -49,15 +84,36 @@
     {{#Additional_Resources}}<span class="pill add" data-field="Additional_Resources"><a class="hint" href="javascript:void(0)">Additional Resources</a></span>{{/Additional_Resources}}
   </div>
 
-  <!-- EXTRA: Always visible when populated -->
+  <!--
+  ============================================================================
+  EXTRA FIELD
+  ============================================================================
+  Always visible when populated. Good for mnemonics, quick notes, etc.
+  Uses {{edit:Extra}} for compatibility with edit addon.
+  ============================================================================
+  -->
   {{#Extra}}
   <div class="extra">{{edit:Extra}}</div>
   {{/Extra}}
 
-  <!-- HINT CONTENT AREA: Expanded hints appear here -->
+  <!--
+  ============================================================================
+  HINT CONTENT AREA
+  ============================================================================
+  Expanded hint content appears here when buttons are clicked.
+  ============================================================================
+  -->
   <div id="hintContentArea"></div>
 
-  <!-- HIDDEN CONTENT STORES: Using divs instead of <template> for AnkiDroid compatibility -->
+  <!--
+  ============================================================================
+  HIDDEN CONTENT STORES
+  ============================================================================
+  These divs store the content for each hint button.
+  They're hidden by CSS and read by JavaScript when a button is clicked.
+  Using <div> instead of <template> for AnkiDroid compatibility.
+  ============================================================================
+  -->
   {{#Notes}}<div class="hintStore" data-field="Notes">{{Notes}}</div>{{/Notes}}
   {{#UWorld_3}}<div class="hintStore" data-field="UWorld_3">{{UWorld_3}}</div>{{/UWorld_3}}
   {{#UWorld_2CK}}<div class="hintStore" data-field="UWorld_2CK">{{UWorld_2CK}}</div>{{/UWorld_2CK}}
@@ -74,59 +130,55 @@
 
 </div>
 
-<!-- ============================================================================
-     JAVASCRIPT - HINT TOGGLE FUNCTIONALITY
-     ============================================================================
-     
-     KEYBOARD SHORTCUTS:
-     - H: Open next closed hint (in button order)
-     - Shift+H: Close all hints and scroll to top
-     - H when all open: Close all and scroll to top
-     
-     FEATURES:
-     - Prevents listener stacking (Anki reuses webview)
-     - GPU-accelerated animations via .hintBodyInner
-     - Works with "Edit Field During Review" addon
-============================================================================ -->
+<!--
+================================================================================
+JAVASCRIPT — HINT TOGGLE FUNCTIONALITY
+================================================================================
+
+KEYBOARD SHORTCUTS:
+  - H: Open next closed hint (follows button order)
+  - Shift+H: Close all hints and scroll to top
+  - H when all open: Close all and scroll to top
+
+FEATURES:
+  - Prevents listener stacking (Anki reuses webview across cards)
+  - GPU-accelerated animations via CSS transforms
+  - Maintains hint order when multiple are open
+  - Works with "Edit Field During Review" addon
+
+CUSTOMIZATION:
+  - Change animation duration in CSS (.hintBodyInner transition)
+  - Change keyboard shortcut by modifying the key check below
+================================================================================
+-->
 <script>
 (function() {
-  // ============================================================================
+  // ==========================================================================
   // ADAPTIVE FONT SIZE
-  // ============================================================================
-  // Measure text length and apply appropriate size class
-  
+  // ==========================================================================
   var question = document.querySelector(".question");
   if (question) {
-    // Get text content without HTML tags
     var text = question.textContent || question.innerText || "";
     var len = text.replace(/\s+/g, " ").trim().length;
-    
-    // Remove any existing size classes
     question.classList.remove("text-short", "text-medium", "text-long");
-    
-    // Apply class based on length thresholds
-    if (len < 80) {
-      question.classList.add("text-short");
-    } else if (len < 200) {
-      question.classList.add("text-medium");
-    } else {
-      question.classList.add("text-long");
-    }
+    if (len < 80) question.classList.add("text-short");
+    else if (len < 200) question.classList.add("text-medium");
+    else question.classList.add("text-long");
   }
 
-  // ============================================================================
-  // HINT TOGGLE FUNCTIONALITY
-  // ============================================================================
-  
+  // ==========================================================================
+  // HINT SYSTEM INITIALIZATION
+  // ==========================================================================
   var row = document.getElementById("hintRow");
   var area = document.getElementById("hintContentArea");
   if (!row || !area) return;
 
-  // ============================================================================
+  // ==========================================================================
   // PREVENT LISTENER STACKING
-  // ============================================================================
-  // Anki reuses webview across cards - remove old listeners before adding new
-  
+  // ==========================================================================
+  // Anki reuses the webview across cards, so we need to remove old listeners
+  // before adding new ones. This prevents the H key from triggering multiple
+  // times after reviewing several cards.
   try {
     if (window.__CL_HINTS_KEYDOWN__) {
       document.removeEventListener("keydown", window.__CL_HINTS_KEYDOWN__, true);
@@ -142,10 +194,9 @@
   // Disable smooth scroll for instant scroll-to-top
   try { document.documentElement.style.scrollBehavior = "auto"; } catch(e) {}
 
-  // ============================================================================
-  // POLYFILLS FOR ANKIDROID
-  // ============================================================================
-  
+  // ==========================================================================
+  // POLYFILLS FOR OLDER ANKIDROID VERSIONS
+  // ==========================================================================
   if (!Element.prototype.matches) {
     Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
   }
@@ -160,10 +211,11 @@
     };
   }
 
-  // ============================================================================
+  // ==========================================================================
   // UTILITY FUNCTIONS
-  // ============================================================================
-
+  // ==========================================================================
+  
+  // Remove focus from inputs to enable keyboard shortcuts
   function focusForHotkeys() {
     try {
       if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
@@ -172,9 +224,13 @@
     } catch(e) {}
   }
 
+  // Generate unique ID for hint blocks
   function blockId(f) { return "hintBlock__" + f; }
+  
+  // Check if a hint is currently open
   function isOpen(f) { return !!document.getElementById(blockId(f)); }
 
+  // Scroll to an element with offset
   function scrollToTopOf(el, offset) {
     if (!el) return;
     var off = (typeof offset === "number") ? offset : 12;
@@ -182,10 +238,9 @@
     window.scrollBy(0, -off);
   }
 
-  // ============================================================================
+  // ==========================================================================
   // COLLECT CONTENT FROM HIDDEN STORES
-  // ============================================================================
-
+  // ==========================================================================
   var templates = {};
   var stores = document.querySelectorAll(".hintStore[data-field]");
   for (var i = 0; i < stores.length; i++) {
@@ -193,16 +248,18 @@
     templates[f] = stores[i].innerHTML;
   }
 
-  // ============================================================================
+  // ==========================================================================
   // ESTABLISH BUTTON ORDER
-  // ============================================================================
-
+  // ==========================================================================
+  // This determines the order hints appear when opened, and the order
+  // the H key cycles through them.
   var pillOrder = [];
   var allPills = row.querySelectorAll(".pill[data-field]");
   for (var j = 0; j < allPills.length; j++) {
     pillOrder.push(allPills[j].getAttribute("data-field"));
   }
 
+  // Get the correct position to insert a hint block (maintains order)
   function getInsertPosition(field) {
     var fieldIndex = pillOrder.indexOf(field);
     var existingBlocks = area.querySelectorAll(".hintBlock");
@@ -214,20 +271,21 @@
     return null;
   }
 
-  // ============================================================================
+  // ==========================================================================
   // OPEN / CLOSE FUNCTIONS
-  // ============================================================================
-
+  // ==========================================================================
+  
   function openHint(field, btn) {
+    // If already open, just scroll to it
     if (isOpen(field)) {
       var existing = document.getElementById(blockId(field));
       if (existing) scrollToTopOf(existing, 12);
       if (btn) btn.classList.add("activeHint");
       return;
     }
-
     if (!templates.hasOwnProperty(field)) return;
 
+    // Create hint block structure
     var block = document.createElement("div");
     block.className = "hintBlock";
     block.id = blockId(field);
@@ -247,15 +305,18 @@
     block.appendChild(header);
     block.appendChild(body);
 
+    // Insert in correct position
     var insertBefore = getInsertPosition(field);
     if (insertBefore) area.insertBefore(block, insertBefore);
     else area.appendChild(block);
 
     if (btn) btn.classList.add("activeHint");
-
     block.classList.add("open");
+    
+    // Trigger animation on next frame
     requestAnimationFrame(function(){ block.classList.add("animateIn"); });
 
+    // Scroll to the hint after animation starts
     setTimeout(function(){
       scrollToTopOf(block, 12);
       focusForHotkeys();
@@ -268,6 +329,7 @@
       if (btn) btn.classList.remove("activeHint");
       return;
     }
+    // Animate out
     block.classList.remove("animateIn");
     block.classList.add("closing");
     setTimeout(function(){
@@ -302,10 +364,11 @@
     else openHint(field, btn);
   }
 
-  // ============================================================================
+  // ==========================================================================
   // EVENT HANDLERS
-  // ============================================================================
-
+  // ==========================================================================
+  
+  // Click handler for hint buttons
   var rowClickHandler = function(e){
     var pill = e.target.closest(".pill");
     if (!pill) return;
@@ -318,8 +381,9 @@
   window.__CL_HINTS_ROWCLICK__ = rowClickHandler;
   window.__CL_HINTS_ROWCLICK_ROW__ = row;
 
+  // Keyboard handler for H key
   var keyHandler = function(e) {
-    // Allow typing in inputs, but work in contenteditable for edit addon
+    // Allow typing in form fields
     var t = e.target;
     if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
 
@@ -336,20 +400,20 @@
       return;
     }
 
-    // Count open/closed
+    // Count open/closed hints
     var openCount = 0, closedCount = 0;
     for (var i = 0; i < pillOrder.length; i++) {
       if (isOpen(pillOrder[i])) openCount++;
       else closedCount++;
     }
 
-    // All open -> close all
+    // All open → close all
     if (openCount > 0 && closedCount === 0) {
       closeAllInstantAndTop();
       return;
     }
 
-    // Open next closed
+    // Open next closed hint
     var nextClosed = null;
     for (var j = 0; j < pillOrder.length; j++) {
       var f = pillOrder[j];
@@ -365,7 +429,8 @@
 
   document.addEventListener("keydown", keyHandler, true);
   window.__CL_HINTS_KEYDOWN__ = keyHandler;
-
+  
+  // Initial focus setup
   setTimeout(focusForHotkeys, 100);
 })();
 </script>
