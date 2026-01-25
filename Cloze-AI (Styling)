@@ -1,40 +1,27 @@
-/* 
+/*
 ================================================================================
 CLOZE-AI — STYLESHEET
 ================================================================================
-
 PURPOSE:
-  Modern, dark-themed card design optimized for medical study (USMLE).
-  Features expandable resource hints and responsive design.
-
+  Styles for the Cloze-AI note type with expandable resource hint buttons.
+  Dark theme optimized for extended study sessions.
 FEATURES:
-  - Dark background (#1e1e1e) with light text for reduced eye strain
-  - Responsive design for desktop and mobile (AnkiDroid)
-  - Expandable resource hint buttons with color coding
-  - Smooth GPU-accelerated animations
-  - Consistent font sizing (overrides imported card styling)
-  - Proper list formatting with visible bullets
-  - Tight image spacing for content-heavy cards
-  - AnkiDroid text wrapping fix for long words
-
-CUSTOMIZATION:
-  - Colors: Search for "CUSTOMIZE:" comments below
-  - Font sizes: In the QUESTION and MOBILE sections
-  - Animation speed: In the HINT BLOCKS section
-
+  - Dark theme (#1e1e1e background)
+  - Adaptive font sizing for mobile
+  - 13 color-coded resource hint buttons
+  - Consistent image spacing
+  - AnkiDroid text wrapping fixes (overflow-wrap: anywhere)
+USAGE:
+  Copy this entire file content into Anki's "Styling" field.
 AUTHOR: Christos Longros
 LICENSE: BSD 3-Clause
-LAST UPDATED: January 2026
 ================================================================================
 */
 
-
 /* =============================================================================
-   BASE RESET & SETUP
-   =============================================================================
-   Normalizes browser defaults and prevents mobile text size adjustments.
-*/
-
+   BASE RESET
+   Prevents height/sizing issues on different Anki platforms
+   ============================================================================= */
 html, body { 
   height: auto !important;
   margin: 0;
@@ -42,121 +29,81 @@ html, body {
 }
 
 body {
-  /* Prevent iOS/Android from auto-adjusting text size */
   -webkit-text-size-adjust: 100% !important;
   text-size-adjust: 100% !important;
-  display: block !important;
 }
-
 
 /* =============================================================================
    MAIN CARD CONTAINER
-   =============================================================================
-   The outermost container. Uses flexbox for top-aligned, centered content.
-   
-   CUSTOMIZE: Change background color here
-*/
-
+   ============================================================================= */
 .card {
-  background: #1e1e1e;                /* CUSTOMIZE: Card background */
-  color: #eaeaea;                      /* CUSTOMIZE: Main text color */
+  background: #1e1e1e;
+  color: #eaeaea;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 28px;
   text-align: center;
   padding: 40px 60px;
   box-sizing: border-box;
-  min-height: 100vh;
-  display: flex !important;
-  align-items: flex-start !important;  /* Top-aligned */
-  justify-content: center !important;  /* Horizontally centered */
 }
 
-/* Inner wrapper - constrains content width on large screens */
 .card-wrapper {
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
-
 
 /* =============================================================================
    QUESTION SECTION
-   =============================================================================
-   The main cloze text. Always centered with consistent font sizing.
-   
-   CUSTOMIZE: Change font-size for desktop here (mobile sizes below)
-*/
-
+   ============================================================================= */
 .question { 
-  font-size: 36px !important;          /* CUSTOMIZE: Desktop question size */
+  font-size: 36px !important;
   font-weight: 500;
   line-height: 1.5;
   margin: 0;
   width: 100%;
-  text-align: center;
-  text-align-last: center !important;
+  text-align: center !important;
   word-spacing: normal !important;
   text-justify: none !important;
 }
 
-/* Force consistent font sizes on all child elements */
 .question * { 
   font-size: inherit !important;
   word-spacing: normal !important;
   text-justify: none !important;
 }
 
-/* Override justify alignment from imported cards */
-.question [style*="justify"],
-.question [style*="JUSTIFY"],
-.extra [style*="justify"],
-.extra [style*="JUSTIFY"] {
+/* Force override justify - prevents stretched text from pasted content */
+.question, .question *, .question p, .question div, .question span,
+.extra, .extra *, .extra p, .extra div, .extra span,
+.hintBodyInner, .hintBodyInner *, .hintBodyInner p, .hintBodyInner div, .hintBodyInner span {
+  text-align: inherit !important;
+  word-spacing: normal !important;
+  text-justify: none !important;
+  letter-spacing: normal !important;
+}
+
+.question [style*="justify"], .question [style*="JUSTIFY"],
+.extra [style*="justify"], .extra [style*="JUSTIFY"],
+.hintBodyInner [style*="justify"], .hintBodyInner [style*="JUSTIFY"] {
   text-align: left !important;
   word-spacing: normal !important;
   text-justify: none !important;
 }
 
-/* Force text elements to not justify */
-.question p, .question div, .question span, .question font,
-.question b, .question i, .question strong, .question em, .question u {
-  text-align: inherit !important;
-  word-spacing: normal !important;
-  text-justify: none !important;
-  letter-spacing: normal !important;
-  white-space: normal !important;
-}
-
-/* Prevent inline-block from causing word gaps */
-.question span, .question font, .question b, .question i,
-.question strong, .question em, .question u {
-  display: inline !important;
-}
-
-
 /* =============================================================================
-   CLOZE DELETION STYLING
-   =============================================================================
-   The revealed answer text (green and bold for visibility).
-   
-   CUSTOMIZE: Change cloze answer color here
-*/
-
+   CLOZE STYLING
+   The revealed answer text (green)
+   ============================================================================= */
 .cloze { 
-  color: #4caf50;                      /* CUSTOMIZE: Cloze answer color */
+  color: #4caf50;
   font-weight: 700; 
   font-size: inherit !important; 
 }
 
-
 /* =============================================================================
    DIVIDER
-   =============================================================================
-   Subtle gradient line separating question from answer/hints.
-*/
-
+   Gradient line between question and hint buttons
+   ============================================================================= */
 .frontBackDivider {
   width: 100%;
   height: 1px;
@@ -168,54 +115,39 @@ body {
     rgba(255,255,255,0.3) 80%, 
     transparent
   );
-  border-radius: 2px;
 }
-
 
 /* =============================================================================
    EXTRA FIELD
-   =============================================================================
-   Always visible when populated. Good for mnemonics, quick notes, etc.
-   
-   CUSTOMIZE: Change Extra field color here
-*/
-
+   Additional notes shown below the question
+   ============================================================================= */
 .extra {
-  font-size: 24px !important;          /* CUSTOMIZE: Extra field size */
-  color: #c88f8f;                      /* CUSTOMIZE: Extra field color */
+  font-size: 24px !important;
+  color: #c88f8f;
   opacity: 0.95;
   margin-bottom: 20px;
-  text-align: center;
+  text-align: center !important;
   width: 100%;
   line-height: 1.7;
-  /* NOT using flex - it breaks inline content into stacked lines */
+  word-spacing: normal !important;
 }
 
 .extra * {
   font-size: inherit !important;
   word-spacing: normal !important;
-  text-justify: none !important;
 }
-
-/* Keep inline elements inline (prevents word stacking) */
-.extra a, .extra span, .extra b, .extra i, .extra strong, .extra em, .extra u {
-  display: inline !important;
-}
-
 
 /* =============================================================================
    HINT BUTTONS ROW
-   =============================================================================
-   Container for the resource toggle buttons.
-*/
-
+   Container for all resource buttons
+   ============================================================================= */
 #hintRow {
-  margin-top: 10px;
+  margin-top: 16px;
   margin-bottom: 14px;
   display: flex;
   gap: 12px;
   justify-content: center;
-  flex-wrap: wrap;                     /* Wrap on smaller screens */
+  flex-wrap: wrap;
   width: 100%;
 }
 
@@ -224,30 +156,15 @@ body {
   width: 100%; 
 }
 
-/* Hide template elements */
-.card-wrapper > template { display: none !important; }
+/* Hide the content stores (JavaScript reads from these) */
 .hintStore { display: none !important; }
 
-
 /* =============================================================================
-   PILL CONTAINERS
-   =============================================================================
-   Wrapper for each hint button.
-*/
-
+   PILL CONTAINERS & HINT BUTTONS
+   ============================================================================= */
 .pill { 
   display: inline-flex !important; 
-  flex: none !important; 
-  width: fit-content !important; 
 }
-
-
-/* =============================================================================
-   HINT BUTTONS
-   =============================================================================
-   The clickable toggle buttons for each resource.
-   Glassmorphism-style with subtle transparency.
-*/
 
 a.hint {
   display: inline-flex !important;
@@ -265,11 +182,10 @@ a.hint {
   white-space: nowrap !important;
   user-select: none !important;
   box-shadow: 0 2px 10px rgba(0,0,0,.18) !important;
-  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
-/* Plus sign indicator (closed state) */
+/* Plus/minus indicator after button text */
 a.hint::after { 
   content: " +" !important; 
   margin-left: 10px !important; 
@@ -277,56 +193,36 @@ a.hint::after {
   opacity: .85 !important; 
 }
 
-/* Minus sign indicator (open state) */
 a.hint.activeHint::after { 
   content: " −" !important; 
   opacity: 1 !important; 
 }
 
-/* Active/open button styling */
 a.hint.activeHint {
   border-color: rgba(255,255,255,.65) !important;
   box-shadow: 0 0 0 2px rgba(255,255,255,.15) inset, 
               0 4px 18px rgba(0,0,0,.35) !important;
 }
 
-/* Hover effect - only on devices that support hover (not touch) */
-@media (hover: hover) {
-  a.hint:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(0,0,0,.4) !important;
-    background: rgba(255,255,255,.12) !important;
-  }
-  a.hint:active { 
-    transform: translateY(0) scale(0.98); 
-  }
-}
-
-
 /* =============================================================================
-   RESOURCE COLOR THEMES
-   =============================================================================
-   Each resource has a distinctive color for quick visual identification.
-   
-   CUSTOMIZE: Change button colors here
-   Format: .pill.CLASSNAME a.hint { color: #HEX !important; }
-*/
+   RESOURCE BUTTON COLORS
+   Each resource has its own distinctive color
+   ============================================================================= */
+.pill.notes a.hint { color: #80deea !important; }
+.pill.uworld a.hint { color: #5fd38d !important; }
+.pill.uworld2ck a.hint { color: #7fe9a8 !important; }
+.pill.amboss a.hint { color: #66aaff !important; }
+.pill.missed a.hint { color: #ff8a65 !important; }
+.pill.kaplan a.hint { color: #c29bff !important; }
+.pill.pathoma a.hint { color: #e0c3a8 !important; }
+.pill.bnb a.hint { color: #ffcc80 !important; }
+.pill.fa a.hint { color: #ff9a9a !important; }
+.pill.nbme a.hint { color: #cfd8dc !important; }
+.pill.nejm a.hint { color: #ffd27a !important; }
+.pill.utd a.hint { color: #66e0c2 !important; }
+.pill.add a.hint { color: #d0d0d0 !important; }
 
-.pill.notes a.hint { color: #80deea !important; }      /* Cyan - Notes */
-.pill.uworld a.hint { color: #5fd38d !important; }     /* Green - UWorld 3 */
-.pill.uworld2ck a.hint { color: #7fe9a8 !important; }  /* Light green - UWorld 2CK */
-.pill.amboss a.hint { color: #66aaff !important; }     /* Blue - AMBOSS */
-.pill.missed a.hint { color: #ff8a65 !important; }     /* Orange - Missed Questions */
-.pill.kaplan a.hint { color: #c29bff !important; }     /* Purple - Kaplan */
-.pill.pathoma a.hint { color: #e0c3a8 !important; }    /* Tan - Pathoma */
-.pill.bnb a.hint { color: #ffcc80 !important; }        /* Amber - Boards and Beyond */
-.pill.fa a.hint { color: #ff9a9a !important; }         /* Red/pink - First Aid */
-.pill.nbme a.hint { color: #cfd8dc !important; }       /* Gray - NBME */
-.pill.nejm a.hint { color: #ffd27a !important; }       /* Gold - NEJM */
-.pill.utd a.hint { color: #66e0c2 !important; }        /* Teal - UpToDate */
-.pill.add a.hint { color: #d0d0d0 !important; }        /* Light gray - Additional */
-
-/* Active state backgrounds (tinted version of each color) */
+/* Active state background colors (when hint is expanded) */
 .pill.notes a.hint.activeHint { background: rgba(128,222,234,.35) !important; }
 .pill.uworld a.hint.activeHint { background: rgba(95,211,141,.35) !important; }
 .pill.uworld2ck a.hint.activeHint { background: rgba(127,233,168,.35) !important; }
@@ -341,204 +237,141 @@ a.hint.activeHint {
 .pill.utd a.hint.activeHint { background: rgba(102,224,194,.35) !important; }
 .pill.add a.hint.activeHint { background: rgba(255,255,255,.28) !important; }
 
-
 /* =============================================================================
-   HINT BLOCKS (Expanded Content)
-   =============================================================================
-   Container for revealed resource content when a button is clicked.
-   
-   CUSTOMIZE: Animation duration in .hintBodyInner transition
-*/
-
+   HINT BLOCKS (expanded content panels)
+   ============================================================================= */
 .hintBlock { 
   max-width: 100%; 
   margin: 0 auto 20px; 
 }
 
-/* Resource name header */
+/* Small header above each expanded hint */
 .hintHeader { 
-  font-size: 16px; 
-  font-weight: 600; 
-  text-align: left; 
+  font-size: 16px !important; 
+  font-weight: 600 !important; 
+  text-align: left !important; 
   margin-bottom: 10px; 
   opacity: .85; 
   color: #eaeaea;
 }
 
-/* Outer container - no animation to prevent layout shifts */
+.hintHeader * {
+  font-size: inherit !important;
+}
+
 .hintBody {
   border-radius: 12px;
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.08);
 }
 
-/* Inner content - GPU-accelerated animation */
 .hintBodyInner {
   padding: 12px 16px;
-  text-align: left;
-  font-size: 18px;
+  text-align: left !important;
+  font-size: 18px !important;
   line-height: 1.6;
   color: #eaeaea;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 180ms ease, transform 180ms ease;  /* CUSTOMIZE: Animation speed */
-  will-change: opacity, transform;
+  word-spacing: normal !important;
 }
 
-.hintBlock.animateIn .hintBodyInner { 
-  opacity: 1; 
-  transform: translateY(0); 
-}
-
-.hintBlock.closing .hintBodyInner { 
-  opacity: 0; 
-  transform: translateY(-8px); 
-}
-
-/* Reset imported styling */
 .hintBodyInner * { 
+  font-size: inherit !important;
   background: none !important; 
   box-shadow: none !important; 
 }
 
-
 /* =============================================================================
    LIST STYLING
-   =============================================================================
-   Ensures lists display properly with visible bullets.
-   Using list-style-position: outside prevents bullets from being cut off.
-*/
-
+   Consistent list appearance across all content areas
+   ============================================================================= */
 .question ul, .question ol, 
 .extra ul, .extra ol, 
 .hintBodyInner ul, .hintBodyInner ol {
   text-align: left !important;
-  text-align-last: left !important;
   padding-left: 1.5em !important;
   margin: 12px 0 !important;
   list-style-position: outside !important;
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
 }
 
 .question li, .extra li, .hintBodyInner li {
   text-align: left !important;
-  text-align-last: left !important;
   padding-left: 0.5em !important;
   margin: 8px 0 !important;
-  display: list-item !important;
 }
-
-/* Extra field - left-align content when it contains lists */
-.extra ul, .extra ol {
-  align-self: flex-start !important;
-  width: 100% !important;
-}
-
 
 /* =============================================================================
-   IMAGES
-   =============================================================================
-   Consistent image styling with tight spacing for content-heavy cards.
-   
-   CUSTOMIZE: Image margins and border-radius here
-*/
-
-.question img, .extra img, .hintBodyInner img, .question br + img {
+   IMAGES - CONSISTENT SPACING
+   JavaScript removes <br> tags; CSS controls the actual spacing
+   ============================================================================= */
+.question img, .extra img, .hintBodyInner img {
   display: block !important;
   max-width: 100% !important;
   height: auto !important;
-  margin: 8px auto !important;         /* CUSTOMIZE: Image spacing */
-  border-radius: 10px;                 /* CUSTOMIZE: Image corners */
+  margin: 8px auto !important;
+  border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,.3);
 }
 
-/* Consecutive images - minimal gap */
-.hintBodyInner img + img, .extra img + img, .question img + img {
-  margin-top: 4px !important;          /* CUSTOMIZE: Gap between images */
+/* Tighter spacing between consecutive images (after BR removal) */
+.question img + img, .extra img + img, .hintBodyInner img + img {
+  margin-top: 4px !important;
 }
 
-.question br + img { 
-  margin-top: 12px !important; 
+/* Remove margins from image wrapper elements */
+.question p:has(img), .extra p:has(img), .hintBodyInner p:has(img),
+.question div:has(img), .extra div:has(img), .hintBodyInner div:has(img) {
+  margin: 0 !important;
+  padding: 0 !important;
 }
-
 
 /* =============================================================================
    TABLES
-   =============================================================================
-   Styling for tables within hint content.
-*/
-
-.hintBodyInner table {
+   ============================================================================= */
+.hintBodyInner table, .extra table, .question table {
   max-width: 100% !important;
-  width: auto !important;
   border-collapse: collapse;
   margin: 12px auto;
   background: rgba(255,255,255,.02);
   border-radius: 8px;
-  overflow: hidden;
 }
 
-.hintBodyInner td, .hintBodyInner th {
+.hintBodyInner td, .hintBodyInner th,
+.extra td, .extra th,
+.question td, .question th {
   padding: 8px 12px;
-  vertical-align: top;
   border: 1px solid rgba(255,255,255,.1);
-  text-align: left;
+  text-align: left !important;
+  word-spacing: normal !important;
 }
-
-.hintBodyInner th { 
-  background: rgba(255,255,255,.05); 
-  font-weight: 600; 
-}
-
 
 /* =============================================================================
    LINKS
-   =============================================================================
-*/
-
+   ============================================================================= */
 .question a, .extra a, .hintBodyInner a {
   color: #66aaff;
   text-decoration: underline;
-  text-decoration-color: rgba(102, 170, 255, 0.4);
-  text-underline-offset: 2px;
+  word-break: break-all !important;
+  overflow-wrap: anywhere !important;
 }
 
-
 /* =============================================================================
-   ANKIDROID TEXT WRAPPING FIX
-   =============================================================================
-   Prevents long words (e.g., German medical terms) from being cut off.
-   Uses overflow-wrap: anywhere for aggressive line breaking when needed.
-*/
-
+   TEXT WRAPPING (AnkiDroid fix)
+   Prevents horizontal scrolling on long words/URLs
+   ============================================================================= */
 .card, .card-wrapper, .question, .question *, .cloze, 
 .extra, .extra *, .hintBodyInner, .hintBodyInner * {
-  hyphens: none !important;
-  -webkit-hyphens: none !important;
   word-break: normal !important;
   white-space: normal !important;
   overflow-wrap: anywhere !important;
 }
 
-
 /* =============================================================================
-   MOBILE OPTIMIZATION (AnkiDroid)
-   =============================================================================
-   Responsive adjustments for screens under 1100px width.
-   
-   CUSTOMIZE: Mobile font sizes in the .text-short/medium/long classes
-*/
-
+   MOBILE STYLES (width ≤ 1100px)
+   ============================================================================= */
 @media (max-width: 1100px) {
   .card { 
     padding: 20px; 
     font-size: 20px; 
-    min-height: auto; 
   }
   
   .question { 
@@ -546,13 +379,13 @@ a.hint.activeHint {
     margin-bottom: 16px; 
   }
   
-  /* Adaptive font sizes for mobile - based on text length */
-  .question.text-short { font-size: 32px !important; }   /* < 80 chars */
-  .question.text-medium { font-size: 26px !important; }  /* 80-200 chars */
-  .question.text-long { font-size: 22px !important; }    /* > 200 chars */
+  /* Adaptive font sizes based on text length (set by JavaScript) */
+  .question.text-short { font-size: 32px !important; }
+  .question.text-medium { font-size: 26px !important; }
+  .question.text-long { font-size: 22px !important; }
   
   .extra { 
-    font-size: 20px !important;        /* Larger for mobile readability */
+    font-size: 20px !important;
     margin-bottom: 16px; 
   }
   
@@ -560,7 +393,6 @@ a.hint.activeHint {
     margin: 20px 0 16px; 
   }
   
-  /* Smaller hint buttons on mobile */
   a.hint { 
     padding: 9px 16px !important; 
     font-size: 13px !important; 
@@ -572,79 +404,27 @@ a.hint.activeHint {
   }
   
   .hintBodyInner { 
-    font-size: 18px;                   /* Larger hint content */
+    font-size: 18px !important;
     padding: 10px 12px; 
     line-height: 1.5; 
   }
   
-  /* Tighter list spacing on mobile */
   .question ul, .question ol, .extra ul, .extra ol, .hintBodyInner ul, .hintBodyInner ol {
     padding-left: 1.2em !important;
-    list-style-position: outside !important;
-    text-align: left !important;
-    text-align-last: left !important;
-    width: auto !important;
-    max-width: 100% !important;
     margin: 8px 0 !important;
-    display: block !important;
   }
   
   .question li, .extra li, .hintBodyInner li {
     margin: 6px 0 !important;
-    text-align: left !important;
-    text-align-last: left !important;
     padding-left: 0.3em !important;
   }
 
-  /* Tighter image spacing on mobile */
+  /* Mobile image spacing - same as desktop */
   .question img, .extra img, .hintBodyInner img { 
-    margin: 4px auto !important; 
+    margin: 8px auto !important; 
   }
   
-  .hintBodyInner img + img, .extra img + img, .question img + img { 
-    margin-top: 2px !important; 
+  .question img + img, .extra img + img, .hintBodyInner img + img { 
+    margin-top: 4px !important; 
   }
-}
-
-
-/* =============================================================================
-   EDITOR ALIGNMENT OVERRIDES
-   =============================================================================
-   Allows per-card text alignment via Anki's editor buttons.
-   Also forces override of justify alignment from imported cards.
-*/
-
-.question [style*="text-align: center"], .question [style*="text-align:center"],
-.extra [style*="text-align: center"], .extra [style*="text-align:center"] {
-  text-align: center !important;
-  word-spacing: normal !important;
-  display: block;
-  width: 100%;
-}
-
-.question [style*="text-align: left"], .question [style*="text-align:left"],
-.extra [style*="text-align: left"], .extra [style*="text-align:left"] {
-  text-align: left !important;
-  word-spacing: normal !important;
-  display: block;
-  width: 100%;
-}
-
-.question [style*="text-align: right"], .question [style*="text-align:right"],
-.extra [style*="text-align: right"], .extra [style*="text-align:right"] {
-  text-align: right !important;
-  word-spacing: normal !important;
-  display: block;
-  width: 100%;
-}
-
-/* Force override justify alignment */
-.question [style*="text-align: justify"], .question [style*="text-align:justify"],
-.extra [style*="text-align: justify"], .extra [style*="text-align:justify"],
-.hintBodyInner [style*="text-align: justify"], .hintBodyInner [style*="text-align:justify"] {
-  text-align: left !important;
-  word-spacing: normal !important;
-  text-justify: none !important;
-  display: block;
-  width: 100%;
 }
