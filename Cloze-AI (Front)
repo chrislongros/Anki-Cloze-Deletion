@@ -2,19 +2,16 @@
 ================================================================================
 CLOZE-AI — FRONT TEMPLATE
 ================================================================================
-
 PURPOSE:
   Displays the cloze deletion question (front side of the card).
   The answer is hidden and replaced with [...] or a hint.
-
 FEATURES:
   - Adaptive font size based on text length (mobile only)
   - Clean, centered layout
-  - Compatible with AnkiDroid
-
+  - Removes <br> tags between consecutive images for consistent spacing
+  - Compatible with AnkiDroid gestures
 USAGE:
   Copy this entire file content into Anki's "Front Template" field.
-
 AUTHOR: Christos Longros
 LICENSE: BSD 3-Clause
 ================================================================================
@@ -28,34 +25,91 @@ LICENSE: BSD 3-Clause
 
 <!--
 ================================================================================
-ADAPTIVE FONT SIZE SCRIPT
+SCRIPTS
 ================================================================================
-Measures the text length and applies a CSS class for font sizing.
-Only affects mobile devices (handled via CSS media queries).
+1. ADAPTIVE FONT SIZE
+   Measures the text length and applies a CSS class for font sizing.
+   Only affects mobile devices (handled via CSS media queries).
+   Thresholds:
+     - Short: < 80 characters  → larger font
+     - Medium: 80-200 characters → medium font  
+     - Long: > 200 characters → smaller font
+   You can adjust these thresholds by changing the numbers below.
 
-Thresholds:
-  - Short: < 80 characters  → larger font
-  - Medium: 80-200 characters → medium font  
-  - Long: > 200 characters → smaller font
-
-You can adjust these thresholds by changing the numbers below.
+2. IMAGE SPACING FIX
+   Removes <br> tags between consecutive images to allow CSS to control
+   spacing consistently. This fixes gaps caused by HTML like:
+   <img><br><img><br><img>
 ================================================================================
 -->
 <script>
 (function() {
+  // ==========================================================================
+  // ADAPTIVE FONT SIZE
+  // ==========================================================================
   var question = document.querySelector(".question");
-  if (!question) return;
-  
-  // Get plain text content (strips HTML tags)
-  var text = question.textContent || question.innerText || "";
-  var len = text.replace(/\s+/g, " ").trim().length;
-  
-  // Remove any existing size classes
-  question.classList.remove("text-short", "text-medium", "text-long");
-  
-  // Apply class based on length
-  if (len < 80) question.classList.add("text-short");
-  else if (len < 200) question.classList.add("text-medium");
-  else question.classList.add("text-long");
+  if (question) {
+    // Get plain text content (strips HTML tags)
+    var text = question.textContent || question.innerText || "";
+    var len = text.replace(/\s+/g, " ").trim().length;
+    
+    // Remove any existing size classes
+    question.classList.remove("text-short", "text-medium", "text-long");
+    
+    // Apply class based on length
+    if (len < 80) question.classList.add("text-short");
+    else if (len < 200) question.classList.add("text-medium");
+    else question.classList.add("text-long");
+  }
+
+  // ==========================================================================
+  // IMAGE SPACING FIX
+  // Removes <br> tags between consecutive images for consistent spacing
+  // ==========================================================================
+  function fixImageSpacing(container) {
+    if (!container) return;
+    var imgs = container.querySelectorAll("img");
+    
+    for (var i = 0; i < imgs.length; i++) {
+      var img = imgs[i];
+      img.style.display = "block";
+      img.style.marginLeft = "auto";
+      img.style.marginRight = "auto";
+      img.style.maxWidth = "100%";
+      
+      // Remove <br> tags immediately before this image if preceded by another image
+      var prev = img.previousSibling;
+      while (prev) {
+        var toCheck = prev;
+        prev = prev.previousSibling;
+        
+        // Skip empty text nodes
+        if (toCheck.nodeType === 3 && toCheck.textContent.trim() === "") {
+          toCheck.parentNode.removeChild(toCheck);
+        } 
+        // Check for <br> tags between images
+        else if (toCheck.nodeType === 1 && toCheck.tagName === "BR") {
+          var beforeBr = toCheck.previousSibling;
+          while (beforeBr && beforeBr.nodeType === 3 && beforeBr.textContent.trim() === "") {
+            beforeBr = beforeBr.previousSibling;
+          }
+          // Only remove if there's an image before the <br>
+          if (beforeBr && beforeBr.nodeType === 1 && beforeBr.tagName === "IMG") {
+            toCheck.parentNode.removeChild(toCheck);
+          } else {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
+    }
+  }
+
+  // Apply to question and extra containers
+  var containers = document.querySelectorAll(".question, .extra");
+  for (var c = 0; c < containers.length; c++) {
+    fixImageSpacing(containers[c]);
+  }
 })();
 </script>
