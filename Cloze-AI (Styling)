@@ -1,27 +1,15 @@
 /*
 ================================================================================
-CLOZE-AI — STYLESHEET
+CLOZE-AI — STYLESHEET (FINAL)
 ================================================================================
-PURPOSE:
-  Styles for the Cloze-AI note type with expandable resource hint buttons.
-  Dark theme optimized for extended study sessions.
-FEATURES:
-  - Dark theme (#1e1e1e background)
-  - Adaptive font sizing for mobile
-  - 13 color-coded resource hint buttons
-  - Consistent image spacing
-  - AnkiDroid text wrapping fixes (overflow-wrap: anywhere)
-USAGE:
-  Copy this entire file content into Anki's "Styling" field.
-AUTHOR: Christos Longros
-LICENSE: BSD 3-Clause
+- Line breaks work (divs are display:block)
+- Consistent font rendering
+- Tighter image spacing
+- AnkiDroid compatible
 ================================================================================
 */
 
-/* =============================================================================
-   BASE RESET
-   Prevents height/sizing issues on different Anki platforms
-   ============================================================================= */
+/* Base Reset */
 html, body { 
   height: auto !important;
   margin: 0;
@@ -33,9 +21,7 @@ body {
   text-size-adjust: 100% !important;
 }
 
-/* =============================================================================
-   MAIN CARD CONTAINER
-   ============================================================================= */
+/* Main Card Container */
 .card {
   background: #1e1e1e;
   color: #eaeaea;
@@ -52,58 +38,30 @@ body {
   margin: 0 auto;
 }
 
-/* =============================================================================
-   QUESTION SECTION
-   ============================================================================= */
+/* Question Section */
 .question { 
-  font-size: 36px !important;
+  font-size: 36px;
   font-weight: 500;
   line-height: 1.5;
   margin: 0;
   width: 100%;
-  text-align: center !important;
-  word-spacing: normal !important;
-  text-justify: none !important;
+  text-align: center;
 }
 
-.question * { 
-  font-size: inherit !important;
-  word-spacing: normal !important;
-  text-justify: none !important;
+/* DIVs create line breaks - this is essential! */
+.question div, .extra div, .hintBodyInner div {
+  display: block;
+  width: 100%;
 }
 
-/* Force override justify - prevents stretched text from pasted content */
-.question, .question *, .question p, .question div, .question span,
-.extra, .extra *, .extra p, .extra div, .extra span,
-.hintBodyInner, .hintBodyInner *, .hintBodyInner p, .hintBodyInner div, .hintBodyInner span {
-  text-align: inherit !important;
-  word-spacing: normal !important;
-  text-justify: none !important;
-  letter-spacing: normal !important;
-}
-
-.question [style*="justify"], .question [style*="JUSTIFY"],
-.extra [style*="justify"], .extra [style*="JUSTIFY"],
-.hintBodyInner [style*="justify"], .hintBodyInner [style*="JUSTIFY"] {
-  text-align: left !important;
-  word-spacing: normal !important;
-  text-justify: none !important;
-}
-
-/* =============================================================================
-   CLOZE STYLING
-   The revealed answer text (green)
-   ============================================================================= */
+/* Cloze Styling */
 .cloze { 
   color: #4caf50;
   font-weight: 700; 
   font-size: inherit !important; 
 }
 
-/* =============================================================================
-   DIVIDER
-   Gradient line between question and hint buttons
-   ============================================================================= */
+/* Divider */
 .frontBackDivider {
   width: 100%;
   height: 1px;
@@ -117,30 +75,18 @@ body {
   );
 }
 
-/* =============================================================================
-   EXTRA FIELD
-   Additional notes shown below the question
-   ============================================================================= */
+/* Extra Field */
 .extra {
   font-size: 24px !important;
   color: #c88f8f;
   opacity: 0.95;
   margin-bottom: 20px;
-  text-align: center !important;
+  text-align: center;
   width: 100%;
   line-height: 1.7;
-  word-spacing: normal !important;
 }
 
-.extra * {
-  font-size: inherit !important;
-  word-spacing: normal !important;
-}
-
-/* =============================================================================
-   HINT BUTTONS ROW
-   Container for all resource buttons
-   ============================================================================= */
+/* Hint Buttons Row */
 #hintRow {
   margin-top: 16px;
   margin-bottom: 14px;
@@ -156,16 +102,14 @@ body {
   width: 100%; 
 }
 
-/* Hide the content stores (JavaScript reads from these) */
 .hintStore { display: none !important; }
 
-/* =============================================================================
-   PILL CONTAINERS & HINT BUTTONS
-   ============================================================================= */
+/* Pill Containers */
 .pill { 
   display: inline-flex !important; 
 }
 
+/* Hint Buttons */
 a.hint {
   display: inline-flex !important;
   align-items: center !important;
@@ -185,7 +129,6 @@ a.hint {
   cursor: pointer;
 }
 
-/* Plus/minus indicator after button text */
 a.hint::after { 
   content: " +" !important; 
   margin-left: 10px !important; 
@@ -204,10 +147,7 @@ a.hint.activeHint {
               0 4px 18px rgba(0,0,0,.35) !important;
 }
 
-/* =============================================================================
-   RESOURCE BUTTON COLORS
-   Each resource has its own distinctive color
-   ============================================================================= */
+/* Resource Colors */
 .pill.notes a.hint { color: #80deea !important; }
 .pill.uworld a.hint { color: #5fd38d !important; }
 .pill.uworld2ck a.hint { color: #7fe9a8 !important; }
@@ -222,7 +162,7 @@ a.hint.activeHint {
 .pill.utd a.hint { color: #66e0c2 !important; }
 .pill.add a.hint { color: #d0d0d0 !important; }
 
-/* Active state background colors (when hint is expanded) */
+/* Active Colors */
 .pill.notes a.hint.activeHint { background: rgba(128,222,234,.35) !important; }
 .pill.uworld a.hint.activeHint { background: rgba(95,211,141,.35) !important; }
 .pill.uworld2ck a.hint.activeHint { background: rgba(127,233,168,.35) !important; }
@@ -237,26 +177,19 @@ a.hint.activeHint {
 .pill.utd a.hint.activeHint { background: rgba(102,224,194,.35) !important; }
 .pill.add a.hint.activeHint { background: rgba(255,255,255,.28) !important; }
 
-/* =============================================================================
-   HINT BLOCKS (expanded content panels)
-   ============================================================================= */
+/* Hint Blocks */
 .hintBlock { 
   max-width: 100%; 
   margin: 0 auto 20px; 
 }
 
-/* Small header above each expanded hint */
 .hintHeader { 
-  font-size: 16px !important; 
-  font-weight: 600 !important; 
-  text-align: left !important; 
+  font-size: 16px; 
+  font-weight: 600; 
+  text-align: center; 
   margin-bottom: 10px; 
   opacity: .85; 
   color: #eaeaea;
-}
-
-.hintHeader * {
-  font-size: inherit !important;
 }
 
 .hintBody {
@@ -267,23 +200,18 @@ a.hint.activeHint {
 
 .hintBodyInner {
   padding: 12px 16px;
-  text-align: left !important;
-  font-size: 18px !important;
+  text-align: center;
+  font-size: 18px;
   line-height: 1.6;
   color: #eaeaea;
-  word-spacing: normal !important;
 }
 
 .hintBodyInner * { 
-  font-size: inherit !important;
   background: none !important; 
   box-shadow: none !important; 
 }
 
-/* =============================================================================
-   LIST STYLING
-   Consistent list appearance across all content areas
-   ============================================================================= */
+/* List Styling */
 .question ul, .question ol, 
 .extra ul, .extra ol, 
 .hintBodyInner ul, .hintBodyInner ol {
@@ -299,34 +227,21 @@ a.hint.activeHint {
   margin: 8px 0 !important;
 }
 
-/* =============================================================================
-   IMAGES - CONSISTENT SPACING
-   JavaScript removes <br> tags; CSS controls the actual spacing
-   ============================================================================= */
+/* Images - Tight Spacing */
 .question img, .extra img, .hintBodyInner img {
   display: block !important;
   max-width: 100% !important;
   height: auto !important;
-  margin: 8px auto !important;
+  margin: 4px auto !important;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,.3);
 }
 
-/* Tighter spacing between consecutive images (after BR removal) */
 .question img + img, .extra img + img, .hintBodyInner img + img {
-  margin-top: 4px !important;
+  margin-top: 2px !important;
 }
 
-/* Remove margins from image wrapper elements */
-.question p:has(img), .extra p:has(img), .hintBodyInner p:has(img),
-.question div:has(img), .extra div:has(img), .hintBodyInner div:has(img) {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* =============================================================================
-   TABLES
-   ============================================================================= */
+/* Tables */
 .hintBodyInner table, .extra table, .question table {
   max-width: 100% !important;
   border-collapse: collapse;
@@ -340,13 +255,10 @@ a.hint.activeHint {
 .question td, .question th {
   padding: 8px 12px;
   border: 1px solid rgba(255,255,255,.1);
-  text-align: left !important;
-  word-spacing: normal !important;
+  text-align: left;
 }
 
-/* =============================================================================
-   LINKS
-   ============================================================================= */
+/* Links */
 .question a, .extra a, .hintBodyInner a {
   color: #66aaff;
   text-decoration: underline;
@@ -354,10 +266,7 @@ a.hint.activeHint {
   overflow-wrap: anywhere !important;
 }
 
-/* =============================================================================
-   TEXT WRAPPING (AnkiDroid fix)
-   Prevents horizontal scrolling on long words/URLs
-   ============================================================================= */
+/* Text Wrapping */
 .card, .card-wrapper, .question, .question *, .cloze, 
 .extra, .extra *, .hintBodyInner, .hintBodyInner * {
   word-break: normal !important;
@@ -365,9 +274,7 @@ a.hint.activeHint {
   overflow-wrap: anywhere !important;
 }
 
-/* =============================================================================
-   MOBILE STYLES (width ≤ 1100px)
-   ============================================================================= */
+/* Mobile */
 @media (max-width: 1100px) {
   .card { 
     padding: 20px; 
@@ -404,7 +311,7 @@ a.hint.activeHint {
   }
   
   .hintBodyInner { 
-    font-size: 18px !important;
+    font-size: 18px;
     padding: 10px 12px; 
     line-height: 1.5; 
   }
@@ -419,12 +326,11 @@ a.hint.activeHint {
     padding-left: 0.3em !important;
   }
 
-  /* Mobile image spacing - same as desktop */
   .question img, .extra img, .hintBodyInner img { 
-    margin: 8px auto !important; 
+    margin: 4px auto !important; 
   }
   
   .question img + img, .extra img + img, .hintBodyInner img + img { 
-    margin-top: 4px !important; 
+    margin-top: 2px !important; 
   }
 }
