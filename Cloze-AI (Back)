@@ -406,7 +406,8 @@ GESTURE COMPATIBILITY:
   // H = open next closed hint, or close all if all are open
   // Shift+H = close all hints and scroll to top
   // ==========================================================================
-  if (!isMobile) {
+  // pillOrder guard: on cards with no resource fields, H used to fall through to scrollTo(0,0)
+  if (!isMobile && pillOrder.length > 0) {
     var keyHandler = function(e) {
       var t = e.target;
       if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
